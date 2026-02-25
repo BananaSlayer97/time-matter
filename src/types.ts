@@ -6,9 +6,11 @@ export interface TimeEvent {
   color: string;
   createdAt: string; // ISO string
   order: number;
+  recurring?: 'none' | 'yearly'; // recurring mode
+  note?: string; // optional note
 }
 
-export type EventCategory = 
+export type EventCategory =
   | 'birthday'
   | 'anniversary'
   | 'goal'

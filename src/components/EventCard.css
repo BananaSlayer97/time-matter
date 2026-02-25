@@ -9,7 +9,7 @@
         box-shadow 0.35s ease,
         border-color 0.35s ease;
     animation: cardEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-    cursor: default;
+    cursor: pointer;
 }
 
 .event-card:hover {
@@ -59,6 +59,11 @@
     font-weight: 500;
     color: var(--text-tertiary);
     letter-spacing: 0.5px;
+}
+
+.event-card__recurring {
+    font-size: 12px;
+    opacity: 0.7;
 }
 
 .event-card__actions {

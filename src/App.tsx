@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { useEvents } from './hooks/useEvents';
 import { useDataTransfer } from './hooks/useDataTransfer';
 import { useNotifications } from './hooks/useNotifications';
+import { useTheme } from './hooks/useTheme';
 import { ParticleBackground } from './components/ParticleBackground';
 import { EventCard } from './components/EventCard';
 import { EventForm } from './components/EventForm';
+import { EventDetail } from './components/EventDetail';
 import { EmptyState } from './components/EmptyState';
 import { SettingsMenu } from './components/SettingsMenu';
 import type { TimeEvent } from './types';
@@ -14,9 +16,11 @@ function App() {
   const { events, addEvent, updateEvent, deleteEvent, replaceAllEvents } = useEvents();
   const { exportData, importData } = useDataTransfer(events, replaceAllEvents);
   const { requestPermission, permissionStatus } = useNotifications(events);
+  const { theme, toggleTheme } = useTheme();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<TimeEvent | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [detailEvent, setDetailEvent] = useState<TimeEvent | null>(null);
 
   const handleAdd = () => {
     setEditingEvent(null);
@@ -30,7 +34,6 @@ function App() {
 
   const handleDelete = (id: string) => {
     setDeletingId(id);
-    // Animate out before deleting
     setTimeout(() => {
       deleteEvent(id);
       setDeletingId(null);
@@ -42,8 +45,21 @@ function App() {
     setEditingEvent(null);
   };
 
+  const handleCardClick = (event: TimeEvent) => {
+    setDetailEvent(event);
+  };
+
   const futureEvents = events.filter(e => new Date(e.targetDate).getTime() > Date.now());
   const pastEvents = events.filter(e => new Date(e.targetDate).getTime() <= Date.now());
+
+  const settingsProps = {
+    onExport: exportData,
+    onImport: importData,
+    onRequestNotifications: requestPermission,
+    notificationPermission: permissionStatus,
+    theme,
+    onToggleTheme: toggleTheme,
+  };
 
   return (
     <div className="app">
@@ -63,7 +79,7 @@ function App() {
               <p className="app-header__subtitle">每一刻，都值得铭记</p>
             </div>
           </div>
-          {events.length > 0 && (
+          {events.length > 0 ? (
             <div className="app-header__right">
               <button className="app-header__add-btn" onClick={handleAdd}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -72,21 +88,10 @@ function App() {
                 </svg>
                 <span>新建</span>
               </button>
-              <SettingsMenu
-                onExport={exportData}
-                onImport={importData}
-                onRequestNotifications={requestPermission}
-                notificationPermission={permissionStatus}
-              />
+              <SettingsMenu {...settingsProps} />
             </div>
-          )}
-          {events.length === 0 && (
-            <SettingsMenu
-              onExport={exportData}
-              onImport={importData}
-              onRequestNotifications={requestPermission}
-              notificationPermission={permissionStatus}
-            />
+          ) : (
+            <SettingsMenu {...settingsProps} />
           )}
         </div>
       </header>
@@ -113,6 +118,7 @@ function App() {
                         event={event}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                        onClick={handleCardClick}
                         index={index}
                       />
                     </div>
@@ -138,6 +144,7 @@ function App() {
                         event={event}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                        onClick={handleCardClick}
                         index={index}
                       />
                     </div>
@@ -166,6 +173,14 @@ function App() {
         onUpdate={updateEvent}
         editingEvent={editingEvent}
       />
+
+      {detailEvent && (
+        <EventDetail
+          event={detailEvent}
+          onClose={() => setDetailEvent(null)}
+          onEdit={handleEdit}
+        />
+      )}
     </div>
   );
 }

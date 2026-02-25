@@ -8,10 +8,11 @@ interface EventCardProps {
     event: TimeEvent;
     onEdit: (event: TimeEvent) => void;
     onDelete: (id: string) => void;
+    onClick: (event: TimeEvent) => void;
     index: number;
 }
 
-export function EventCard({ event, onEdit, onDelete, index }: EventCardProps) {
+export function EventCard({ event, onEdit, onDelete, onClick, index }: EventCardProps) {
     const diff = useCountdown(event.targetDate);
     const category = CATEGORIES[event.category];
 
@@ -33,6 +34,7 @@ export function EventCard({ event, onEdit, onDelete, index }: EventCardProps) {
                 animationDelay: `${index * 0.08}s`,
                 '--card-accent': event.color,
             } as React.CSSProperties}
+            onClick={() => onClick(event)}
         >
             {/* Glow accent line */}
             <div className="event-card__accent" style={{ background: category.gradient }} />
@@ -41,11 +43,14 @@ export function EventCard({ event, onEdit, onDelete, index }: EventCardProps) {
                 <div className="event-card__meta">
                     <span className="event-card__icon">{category.icon}</span>
                     <span className="event-card__category">{category.label}</span>
+                    {event.recurring === 'yearly' && (
+                        <span className="event-card__recurring">🔁</span>
+                    )}
                 </div>
                 <div className="event-card__actions">
                     <button
                         className="event-card__btn"
-                        onClick={() => onEdit(event)}
+                        onClick={(e) => { e.stopPropagation(); onEdit(event); }}
                         title="编辑"
                     >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -55,7 +60,7 @@ export function EventCard({ event, onEdit, onDelete, index }: EventCardProps) {
                     </button>
                     <button
                         className="event-card__btn event-card__btn--danger"
-                        onClick={() => onDelete(event.id)}
+                        onClick={(e) => { e.stopPropagation(); onDelete(event.id); }}
                         title="删除"
                     >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -183,6 +183,43 @@
     transform: scale(1.15);
 }
 
+/* Toggle Row */
+.form-toggle-row {
+    display: flex;
+    gap: 8px;
+}
+
+.form-toggle-btn {
+    flex: 1;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.form-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.form-toggle-btn.active {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+/* Textarea */
+.form-textarea {
+    resize: vertical;
+    min-height: 60px;
+    line-height: 1.5;
+}
+
 /* Actions */
 .form-actions {
     display: flex;

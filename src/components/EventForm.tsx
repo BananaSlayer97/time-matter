@@ -29,13 +29,14 @@ export function EventForm({ isOpen, onClose, onSave, onUpdate, editingEvent }: E
     const [targetDate, setTargetDate] = useState('');
     const [category, setCategory] = useState<EventCategory>('custom');
     const [color, setColor] = useState(PRESET_COLORS[0]);
+    const [recurring, setRecurring] = useState<'none' | 'yearly'>('none');
+    const [note, setNote] = useState('');
     const overlayRef = useRef<HTMLDivElement>(null);
     const nameInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (editingEvent) {
             setName(editingEvent.name);
-            // Convert ISO date to local datetime-local format
             const d = new Date(editingEvent.targetDate);
             const localDate = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
                 .toISOString()
@@ -43,11 +44,15 @@ export function EventForm({ isOpen, onClose, onSave, onUpdate, editingEvent }: E
             setTargetDate(localDate);
             setCategory(editingEvent.category);
             setColor(editingEvent.color);
+            setRecurring(editingEvent.recurring || 'none');
+            setNote(editingEvent.note || '');
         } else {
             setName('');
             setTargetDate('');
             setCategory('custom');
             setColor(PRESET_COLORS[0]);
+            setRecurring('none');
+            setNote('');
         }
     }, [editingEvent, isOpen]);
 
@@ -79,6 +84,8 @@ export function EventForm({ isOpen, onClose, onSave, onUpdate, editingEvent }: E
                 targetDate: new Date(targetDate).toISOString(),
                 category,
                 color,
+                recurring,
+                note: note.trim() || undefined,
             });
         } else {
             onSave({
@@ -86,6 +93,8 @@ export function EventForm({ isOpen, onClose, onSave, onUpdate, editingEvent }: E
                 targetDate: new Date(targetDate).toISOString(),
                 category,
                 color,
+                recurring,
+                note: note.trim() || undefined,
             });
         }
         onClose();
@@ -168,6 +177,34 @@ export function EventForm({ isOpen, onClose, onSave, onUpdate, editingEvent }: E
                                 />
                             ))}
                         </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-label">周期</label>
+                        <div className="form-toggle-row">
+                            <button
+                                type="button"
+                                className={`form-toggle-btn ${recurring === 'none' ? 'active' : ''}`}
+                                onClick={() => setRecurring('none')}
+                            >一次性</button>
+                            <button
+                                type="button"
+                                className={`form-toggle-btn ${recurring === 'yearly' ? 'active' : ''}`}
+                                onClick={() => setRecurring('yearly')}
+                            >🔁 每年循环</button>
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-label">备注 (可选)</label>
+                        <textarea
+                            className="form-input form-textarea"
+                            value={note}
+                            onChange={e => setNote(e.target.value)}
+                            placeholder="添加一些备注信息..."
+                            rows={2}
+                            maxLength={200}
+                        />
                     </div>
 
                     <div className="form-actions">

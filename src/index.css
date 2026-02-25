@@ -31,6 +31,30 @@
   /* Sizing */
   --max-width: 900px;
   --header-height: 72px;
+
+  /* Transition */
+  --theme-transition: background 0.4s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ---- Light Theme ---- */
+[data-theme="light"] {
+  --bg-primary: #f0efe8;
+  --bg-secondary: #e8e6dc;
+  --surface-elevated: rgba(255, 255, 252, 0.95);
+
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --card-border: rgba(0, 0, 0, 0.06);
+
+  --text-primary: rgba(20, 20, 30, 0.92);
+  --text-secondary: rgba(20, 20, 30, 0.6);
+  --text-tertiary: rgba(20, 20, 30, 0.4);
+  --text-quaternary: rgba(20, 20, 30, 0.18);
+
+  --accent-gold: #b8941e;
+  --accent-gold-dim: rgba(184, 148, 30, 0.4);
+  --accent-glow: rgba(184, 148, 30, 0.25);
+  --accent-ice: #3a8fd4;
+  --accent-ice-glow: rgba(58, 143, 212, 0.2);
 }
 
 *,
@@ -118,4 +142,36 @@ body::after {
   z-index: 0;
   pointer-events: none;
   opacity: 0.6;
+}
+
+/* ---- Light Theme Overrides ---- */
+[data-theme="light"] body {
+  transition: var(--theme-transition);
+}
+
+[data-theme="light"] body::before {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(200, 190, 160, 0.3) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 80% 100%, rgba(180, 170, 140, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 10% 60%, rgba(190, 180, 150, 0.15) 0%, transparent 60%);
+}
+
+[data-theme="light"] body::after {
+  opacity: 0.015;
+}
+
+[data-theme="light"] .particle-canvas {
+  opacity: 0.25;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="light"] ::selection {
+  background: rgba(184, 148, 30, 0.2);
 }
