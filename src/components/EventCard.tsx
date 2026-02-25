@@ -8,6 +8,10 @@ interface EventCardProps {
     event: TimeEvent;
     onEdit: (event: TimeEvent) => void;
     onDelete: (id: string) => void;
+    onDuplicate: (id: string) => void;
+    onPin: (id: string) => void;
+    onArchive: (id: string) => void;
+    onExportCal: (event: TimeEvent) => void;
     onClick: (event: TimeEvent) => void;
     index: number;
 }
@@ -53,9 +57,9 @@ function getYearlyProgress(targetDate: string): number {
     return Math.min(100, Math.max(0, (elapsed / total) * 100));
 }
 
-export function EventCard({ event, onEdit, onDelete, onClick, index }: EventCardProps) {
+export function EventCard({ event, onEdit, onDelete, onDuplicate, onPin, onArchive, onExportCal, onClick, index }: EventCardProps) {
     const diff = useCountdown(event.targetDate);
-    const category = CATEGORIES[event.category];
+    const category = (CATEGORIES as Record<string, any>)[event.category] || CATEGORIES.custom;
 
     const targetDateObj = new Date(event.targetDate);
     const formattedDate = targetDateObj.toLocaleDateString('zh-CN', {
@@ -88,7 +92,7 @@ export function EventCard({ event, onEdit, onDelete, onClick, index }: EventCard
 
     return (
         <div
-            className={`event-card ${diff.isPast ? 'event-card--past' : 'event-card--future'}`}
+            className={`event-card ${diff.isPast ? 'event-card--past' : 'event-card--future'} ${event.pinned ? 'event-card--pinned' : ''} ${event.archived ? 'event-card--archived' : ''}`}
             style={{
                 animationDelay: `${index * 0.08}s`,
                 '--card-accent': event.color,
@@ -108,11 +112,52 @@ export function EventCard({ event, onEdit, onDelete, onClick, index }: EventCard
                 </div>
                 <div className="event-card__actions">
                     <button
+                        className={`event-card__btn ${event.pinned ? 'event-card__btn--active' : ''}`}
+                        onClick={(e) => { e.stopPropagation(); onPin(event.id); }}
+                        title={event.pinned ? '取消置顶' : '置顶'}
+                    >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill={event.pinned ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 10V8l-2.26-2.26a1 1 0 0 0-.71-.29h-3.46l-4-4-1.42 1.42 4 4v3.46a1 1 0 0 0 .29.71L16 13h-2l-3 7h1l3-7h2s1.5 1.5 1.5 3.5S17.5 20 17.5 20h1s-1-2-1-4.5.5-3.5 1.5-3.5h2l-3-7z" />
+                        </svg>
+                    </button>
+                    <button
+                        className="event-card__btn"
+                        onClick={(e) => { e.stopPropagation(); onDuplicate(event.id); }}
+                        title="复制"
+                    >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                        </svg>
+                    </button>
+                    <button
+                        className="event-card__btn"
+                        onClick={(e) => { e.stopPropagation(); onExportCal(event); }}
+                        title="导出到日历"
+                    >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                    </button>
+                    <button
+                        className={`event-card__btn ${event.archived ? 'event-card__btn--active' : ''}`}
+                        onClick={(e) => { e.stopPropagation(); onArchive(event.id); }}
+                        title={event.archived ? '从归档移出' : '归档'}
+                    >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="21 8 21 21 3 21 3 8" />
+                            <rect x="1" y="3" width="22" height="5" />
+                            <line x1="10" y1="12" x2="14" y2="12" />
+                        </svg>
+                    </button>
+                    <button
                         className="event-card__btn"
                         onClick={(e) => { e.stopPropagation(); onEdit(event); }}
                         title="编辑"
                     >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                         </svg>

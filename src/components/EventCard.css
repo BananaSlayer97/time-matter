@@ -19,6 +19,25 @@
     border-color: var(--accent-gold-dim);
 }
 
+.event-card--pinned {
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 20px var(--accent-glow), var(--shadow-card);
+}
+
+.event-card--pinned:hover {
+    box-shadow: 0 0 30px var(--accent-glow), var(--shadow-elevated);
+}
+
+.event-card--archived {
+    opacity: 0.6;
+    filter: grayscale(0.5);
+}
+
+.event-card--archived:hover {
+    opacity: 1;
+    filter: grayscale(0);
+}
+
 /* Accent line at top */
 .event-card__accent {
     position: absolute;
@@ -96,6 +115,12 @@
 .event-card__btn:hover {
     background: var(--accent-gold-dim);
     color: var(--text-primary);
+}
+
+.event-card__btn--active {
+    background: var(--accent-gold-dim);
+    color: var(--accent-gold);
+    border-color: var(--accent-gold);
 }
 
 .event-card__btn--danger:hover {

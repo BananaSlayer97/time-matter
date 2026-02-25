@@ -16,6 +16,8 @@ import { ToastContainer } from './components/ToastContainer';
 import { SearchToolbar } from './components/SearchToolbar';
 import { StatsBar } from './components/StatsBar';
 import { Onboarding } from './components/Onboarding';
+import { CategoryManager } from './components/CategoryManager';
+import { exportToICal } from './utils/ical';
 import type { TimeEvent } from './types';
 import './App.css';
 
@@ -25,18 +27,34 @@ type ViewMode = 'grid' | 'list';
 const MemoizedEventCard = memo(EventCard);
 
 function App() {
-  const { events, addEvent, updateEvent, deleteEvent, replaceAllEvents } = useEvents();
+  const {
+    events,
+    addEvent,
+    updateEvent,
+    deleteEvent,
+    replaceAllEvents,
+    togglePin,
+    toggleArchive,
+    duplicateEvent,
+    customCategories,
+    addCustomCategory,
+    removeCustomCategory
+  } = useEvents();
+
   const { toasts, removeToast, showSuccess, showError, showUndo } = useToast();
   const toastCallbacks = useMemo(() => ({ showSuccess, showError }), [showSuccess, showError]);
   const { exportData, importData } = useDataTransfer(events, replaceAllEvents, toastCallbacks);
   const { requestPermission, permissionStatus } = useNotifications(events);
   const { theme, toggleTheme } = useTheme();
+
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isCatManagerOpen, setIsCatManagerOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<TimeEvent | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [detailEvent, setDetailEvent] = useState<TimeEvent | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [filteredEvents, setFilteredEvents] = useState<TimeEvent[]>([]);
+  const [showArchived, setShowArchived] = useState(false);
   const deletedRef = useRef<TimeEvent | null>(null);
 
   const handleAdd = useCallback(() => {
@@ -50,7 +68,6 @@ function App() {
   }, []);
 
   const handleDelete = useCallback((id: string) => {
-    // Store deleted event for undo
     const toDelete = events.find(e => e.id === id);
     if (!toDelete) return;
 
@@ -70,6 +87,7 @@ function App() {
             color: deletedRef.current.color,
             recurring: deletedRef.current.recurring,
             note: deletedRef.current.note,
+            reminderMinutes: deletedRef.current.reminderMinutes,
           });
           deletedRef.current = null;
         }
@@ -103,6 +121,28 @@ function App() {
     }
   }, [detailEvent, isFormOpen, handleClose]);
 
+  const handlePin = useCallback((id: string) => {
+    togglePin(id);
+    const ev = events.find(e => e.id === id);
+    if (ev) showSuccess(ev.pinned ? '取消置顶' : '已置顶');
+  }, [togglePin, events, showSuccess]);
+
+  const handleArchive = useCallback((id: string) => {
+    toggleArchive(id);
+    const ev = events.find(e => e.id === id);
+    if (ev) showSuccess(ev.archived ? '已恢复' : '已归档');
+  }, [toggleArchive, events, showSuccess]);
+
+  const handleDuplicate = useCallback((id: string) => {
+    duplicateEvent(id);
+    showSuccess('已复制事件');
+  }, [duplicateEvent, showSuccess]);
+
+  const handleExportICal = useCallback((event: TimeEvent) => {
+    exportToICal(event);
+    showSuccess('正在导出日历文件...');
+  }, [showSuccess]);
+
   // Keyboard shortcuts
   useKeyboardShortcuts({
     onNew: handleAdd,
@@ -110,11 +150,17 @@ function App() {
     onEscape: handleEscape,
   });
 
-  // Separate future/past from filtered events
+  // Display Logic: filter archived if not in archive view
   const now = Date.now();
-  const displayEvents = events.length > 0 ? filteredEvents : [];
-  const futureEvents = displayEvents.filter(e => new Date(e.targetDate).getTime() > now);
-  const pastEvents = displayEvents.filter(e => new Date(e.targetDate).getTime() <= now);
+  const allDisplayEvents = events.length > 0 ? filteredEvents : [];
+
+  // Rule: In main view, hide archived. In archive view, show only archived.
+  const displayEvents = allDisplayEvents.filter(e => !!e.archived === showArchived);
+
+  const pinnedEvents = displayEvents.filter(e => e.pinned);
+  const unpinnedDisplay = displayEvents.filter(e => !e.pinned);
+  const futureEvents = unpinnedDisplay.filter(e => new Date(e.targetDate).getTime() > now);
+  const pastEvents = unpinnedDisplay.filter(e => new Date(e.targetDate).getTime() <= now);
 
   const settingsProps = {
     onExport: exportData,
@@ -123,6 +169,7 @@ function App() {
     notificationPermission: permissionStatus,
     theme,
     onToggleTheme: toggleTheme,
+    onManageCategories: () => setIsCatManagerOpen(true),
   };
 
   return (
@@ -141,25 +188,41 @@ function App() {
               </div>
               <div>
                 <h1 className="app-header__title">Time Matter</h1>
-                <p className="app-header__subtitle">每一刻，都值得铭记</p>
+                <p className="app-header__subtitle">
+                  {showArchived ? '已归档的记忆' : '每一刻，都值得铭记'}
+                </p>
               </div>
             </div>
             <div className="app-header__right">
               {events.length > 0 && (
-                <button className="app-header__add-btn" onClick={handleAdd}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                  <span>新建</span>
-                </button>
+                <>
+                  <button
+                    className={`app-header__btn ${showArchived ? 'active' : ''}`}
+                    onClick={() => setShowArchived(!showArchived)}
+                    title={showArchived ? '查看进行中' : '查看归档'}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="21 8 21 21 3 21 3 8" />
+                      <rect x="1" y="3" width="22" height="5" />
+                      <line x1="10" y1="12" x2="14" y2="12" />
+                    </svg>
+                  </button>
+                  {!showArchived && (
+                    <button className="app-header__add-btn" onClick={handleAdd}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                      </svg>
+                      <span>新建</span>
+                    </button>
+                  )}
+                </>
               )}
               <SettingsMenu {...settingsProps} />
             </div>
           </div>
 
-          {/* Keyboard hints on desktop */}
-          {events.length > 0 && (
+          {events.length > 0 && !showArchived && (
             <div className="app-header__hints">
               <kbd>N</kbd> 新建 · <kbd>/</kbd> 搜索 · <kbd>Esc</kbd> 关闭
             </div>
@@ -171,16 +234,50 @@ function App() {
             <EmptyState onAdd={handleAdd} />
           ) : (
             <div className="events-container">
-              <StatsBar events={events} />
-              <SearchToolbar
-                events={events}
-                onFilteredEvents={handleFilteredEvents}
-                viewMode={viewMode}
-                onViewModeChange={setViewMode}
-              />
+              {!showArchived && <StatsBar events={events.filter(e => !e.archived)} />}
 
-              {displayEvents.length === 0 ? null : (
+              <div className="search-toolbar-row">
+                <SearchToolbar
+                  events={events}
+                  onFilteredEvents={handleFilteredEvents}
+                  viewMode={viewMode}
+                  onViewModeChange={setViewMode}
+                />
+              </div>
+
+              {displayEvents.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--text-tertiary)' }}>
+                  <p>{showArchived ? '没有归档的事件' : '没有找到匹配的事件'}</p>
+                </div>
+              ) : (
                 <>
+                  {pinnedEvents.length > 0 && (
+                    <section className="events-section">
+                      <h2 className="events-section__title">
+                        <span className="events-section__dot events-section__dot--pinned" />
+                        置顶事件
+                        <span className="events-section__count">{pinnedEvents.length}</span>
+                      </h2>
+                      <div className={viewMode === 'grid' ? 'events-grid' : 'events-list'}>
+                        {pinnedEvents.map((event, index) => (
+                          <div key={event.id} className={`event-card-wrapper ${deletingId === event.id ? 'deleting' : ''}`}>
+                            <MemoizedEventCard
+                              event={event}
+                              onEdit={handleEdit}
+                              onDelete={handleDelete}
+                              onPin={handlePin}
+                              onArchive={handleArchive}
+                              onDuplicate={handleDuplicate}
+                              onExportCal={handleExportICal}
+                              onClick={handleCardClick}
+                              index={index}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+
                   {futureEvents.length > 0 && (
                     <section className="events-section">
                       <h2 className="events-section__title">
@@ -190,14 +287,15 @@ function App() {
                       </h2>
                       <div className={viewMode === 'grid' ? 'events-grid' : 'events-list'}>
                         {futureEvents.map((event, index) => (
-                          <div
-                            key={event.id}
-                            className={`event-card-wrapper ${deletingId === event.id ? 'deleting' : ''}`}
-                          >
+                          <div key={event.id} className={`event-card-wrapper ${deletingId === event.id ? 'deleting' : ''}`}>
                             <MemoizedEventCard
                               event={event}
                               onEdit={handleEdit}
                               onDelete={handleDelete}
+                              onPin={handlePin}
+                              onArchive={handleArchive}
+                              onDuplicate={handleDuplicate}
+                              onExportCal={handleExportICal}
                               onClick={handleCardClick}
                               index={index}
                             />
@@ -216,14 +314,15 @@ function App() {
                       </h2>
                       <div className={viewMode === 'grid' ? 'events-grid' : 'events-list'}>
                         {pastEvents.map((event, index) => (
-                          <div
-                            key={event.id}
-                            className={`event-card-wrapper ${deletingId === event.id ? 'deleting' : ''}`}
-                          >
+                          <div key={event.id} className={`event-card-wrapper ${deletingId === event.id ? 'deleting' : ''}`}>
                             <MemoizedEventCard
                               event={event}
                               onEdit={handleEdit}
                               onDelete={handleDelete}
+                              onPin={handlePin}
+                              onArchive={handleArchive}
+                              onDuplicate={handleDuplicate}
+                              onExportCal={handleExportICal}
                               onClick={handleCardClick}
                               index={index}
                             />
@@ -238,8 +337,7 @@ function App() {
           )}
         </main>
 
-        {/* FAB for mobile */}
-        {events.length > 0 && (
+        {!showArchived && events.length > 0 && (
           <button className="fab" onClick={handleAdd} aria-label="添加事件">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="5" x2="12" y2="19" />
@@ -254,6 +352,15 @@ function App() {
           onSave={addEvent}
           onUpdate={updateEvent}
           editingEvent={editingEvent}
+          customCategories={customCategories}
+        />
+
+        <CategoryManager
+          isOpen={isCatManagerOpen}
+          onClose={() => setIsCatManagerOpen(false)}
+          customCategories={customCategories}
+          onAdd={addCustomCategory}
+          onRemove={removeCustomCategory}
         />
 
         {detailEvent && (
@@ -272,3 +379,4 @@ function App() {
 }
 
 export default App;
+
