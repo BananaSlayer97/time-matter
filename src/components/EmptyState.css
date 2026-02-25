@@ -1,0 +1,119 @@
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 40px;
+    position: relative;
+    animation: emptyFadeIn 0.8s ease both;
+}
+
+.empty-state__orb {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.06) 0%, transparent 70%);
+    filter: blur(40px);
+    animation: orbFloat 8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.empty-state__icon {
+    color: var(--text-quaternary);
+    margin-bottom: 24px;
+    animation: iconPulse 3s ease-in-out infinite;
+}
+
+.empty-state__icon svg {
+    opacity: 0.4;
+}
+
+.empty-state__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 12px;
+}
+
+.empty-state__desc {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text-tertiary);
+    line-height: 1.7;
+    margin: 0 0 32px;
+}
+
+.empty-state__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 32px;
+    background: var(--accent-gold);
+    color: #1a1a2e;
+    border: none;
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.empty-state__btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(212, 175, 55, 0.3);
+    background: #e6c84a;
+}
+
+.empty-state__btn:active {
+    transform: translateY(0);
+}
+
+@keyframes emptyFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes orbFloat {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    25% {
+        transform: translate(20px, -15px) scale(1.05);
+    }
+
+    50% {
+        transform: translate(-10px, 10px) scale(0.95);
+    }
+
+    75% {
+        transform: translate(15px, 20px) scale(1.02);
+    }
+}
+
+@keyframes iconPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+}
