@@ -1,14 +1,19 @@
 import { useState } from 'react';
 import { useEvents } from './hooks/useEvents';
+import { useDataTransfer } from './hooks/useDataTransfer';
+import { useNotifications } from './hooks/useNotifications';
 import { ParticleBackground } from './components/ParticleBackground';
 import { EventCard } from './components/EventCard';
 import { EventForm } from './components/EventForm';
 import { EmptyState } from './components/EmptyState';
+import { SettingsMenu } from './components/SettingsMenu';
 import type { TimeEvent } from './types';
 import './App.css';
 
 function App() {
-  const { events, addEvent, updateEvent, deleteEvent } = useEvents();
+  const { events, addEvent, updateEvent, deleteEvent, replaceAllEvents } = useEvents();
+  const { exportData, importData } = useDataTransfer(events, replaceAllEvents);
+  const { requestPermission, permissionStatus } = useNotifications(events);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<TimeEvent | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -59,13 +64,29 @@ function App() {
             </div>
           </div>
           {events.length > 0 && (
-            <button className="app-header__add-btn" onClick={handleAdd}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-              <span>新建</span>
-            </button>
+            <div className="app-header__right">
+              <button className="app-header__add-btn" onClick={handleAdd}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                <span>新建</span>
+              </button>
+              <SettingsMenu
+                onExport={exportData}
+                onImport={importData}
+                onRequestNotifications={requestPermission}
+                notificationPermission={permissionStatus}
+              />
+            </div>
+          )}
+          {events.length === 0 && (
+            <SettingsMenu
+              onExport={exportData}
+              onImport={importData}
+              onRequestNotifications={requestPermission}
+              notificationPermission={permissionStatus}
+            />
           )}
         </div>
       </header>

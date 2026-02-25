@@ -87,6 +87,12 @@
   box-shadow: 0 4px 20px rgba(212, 175, 55, 0.15);
 }
 
+.app-header__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* ---- Main ---- */
 .app-main {
   max-width: var(--max-width);

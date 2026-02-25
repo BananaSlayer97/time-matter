@@ -59,11 +59,16 @@ export function useEvents() {
         });
     }, []);
 
+    const replaceAllEvents = useCallback((newEvents: TimeEvent[]) => {
+        setEvents(newEvents.map((e, i) => ({ ...e, order: i })));
+    }, []);
+
     return {
         events: events.sort((a, b) => a.order - b.order),
         addEvent,
         updateEvent,
         deleteEvent,
         reorderEvents,
+        replaceAllEvents,
     };
 }
