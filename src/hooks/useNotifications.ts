@@ -1,13 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import type { TimeEvent } from '../types';
 
-const NOTIFICATION_THRESHOLDS = [
-    { label: '1天', seconds: 86400 },
-    { label: '1小时', seconds: 3600 },
-    { label: '10分钟', seconds: 600 },
-    { label: '1分钟', seconds: 60 },
-];
-
 const NOTIFIED_KEY = 'time-matter-notified';
 
 function getNotifiedSet(): Set<string> {
@@ -43,7 +36,6 @@ export function useNotifications(events: TimeEvent[]) {
     const sendNotification = useCallback((title: string, body: string, icon?: string) => {
         if (permissionRef.current !== 'granted') return;
 
-        // Try service worker notification first (works in background)
         if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
             navigator.serviceWorker.ready.then((reg) => {
                 reg.showNotification(title, {
@@ -54,7 +46,6 @@ export function useNotifications(events: TimeEvent[]) {
                 });
             });
         } else {
-            // Fallback to regular notification
             new Notification(title, {
                 body,
                 icon: icon || '/icons/icon-192.svg',
@@ -80,18 +71,46 @@ export function useNotifications(events: TimeEvent[]) {
                 // Only check future events
                 if (diff <= 0) continue;
 
-                for (const threshold of NOTIFICATION_THRESHOLDS) {
-                    const key = `${event.id}-${threshold.seconds}`;
-                    if (notified.has(key)) continue;
+                // Per-event custom reminder
+                if (event.reminderMinutes && event.reminderMinutes > 0) {
+                    const reminderMs = event.reminderMinutes * 60 * 1000;
+                    const key = `${event.id}-custom-${event.reminderMinutes}`;
+                    if (!notified.has(key)) {
+                        // Fire when we're within the reminder window (30s tolerance)
+                        if (diff <= reminderMs && diff > (reminderMs - 30000)) {
+                            const label = event.reminderMinutes >= 1440
+                                ? `${Math.floor(event.reminderMinutes / 1440)} 天`
+                                : event.reminderMinutes >= 60
+                                    ? `${Math.floor(event.reminderMinutes / 60)} 小时`
+                                    : `${event.reminderMinutes} 分钟`;
+                            sendNotification(
+                                `⏰ ${event.name}`,
+                                `距离「${event.name}」还有 ${label}！`
+                            );
+                            notified.add(key);
+                            changed = true;
+                        }
+                    }
+                }
 
-                    // Notify when we're within threshold (and within 30s of crossing it)
-                    if (diff <= threshold.seconds * 1000 && diff > (threshold.seconds - 30) * 1000) {
-                        sendNotification(
-                            `⏳ ${event.name}`,
-                            `距离「${event.name}」还有 ${threshold.label}！`
-                        );
-                        notified.add(key);
-                        changed = true;
+                // Default thresholds (fallback for events without custom reminder)
+                if (!event.reminderMinutes) {
+                    const defaultThresholds = [
+                        { label: '1天', seconds: 86400 },
+                        { label: '1小时', seconds: 3600 },
+                        { label: '10分钟', seconds: 600 },
+                    ];
+                    for (const threshold of defaultThresholds) {
+                        const key = `${event.id}-${threshold.seconds}`;
+                        if (notified.has(key)) continue;
+                        if (diff <= threshold.seconds * 1000 && diff > (threshold.seconds - 30) * 1000) {
+                            sendNotification(
+                                `⏳ ${event.name}`,
+                                `距离「${event.name}」还有 ${threshold.label}！`
+                            );
+                            notified.add(key);
+                            changed = true;
+                        }
                     }
                 }
             }
@@ -101,7 +120,6 @@ export function useNotifications(events: TimeEvent[]) {
             }
         };
 
-        // Check every 15 seconds
         intervalRef.current = setInterval(checkEvents, 15000);
         checkEvents();
 

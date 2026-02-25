@@ -105,7 +105,7 @@
 
 .onboarding-btn:hover {
     background: #e6c84a;
-    box-shadow: 0 8px 30px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 8px 30px var(--accent-glow);
 }
 
 @keyframes onboardFadeIn {

@@ -13,10 +13,10 @@
   top: 0;
   z-index: 100;
   height: var(--header-height);
-  background: rgba(10, 10, 20, 0.7);
+  background: var(--surface-elevated);
   backdrop-filter: blur(20px) saturate(1.4);
   -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--card-border);
 }
 
 .app-header__content {
@@ -42,8 +42,8 @@
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: rgba(212, 175, 55, 0.1);
-  border: 1px solid rgba(212, 175, 55, 0.15);
+  background: var(--accent-gold-dim);
+  border: 1px solid var(--accent-gold-dim);
   color: var(--accent-gold);
   animation: logoBreath 4s ease-in-out infinite;
 }
@@ -70,21 +70,22 @@
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background: rgba(212, 175, 55, 0.1);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  background: var(--accent-gold);
+  border: none;
   border-radius: 10px;
-  color: var(--accent-gold);
+  color: #fff;
   font-family: 'DM Sans', sans-serif;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.25s ease;
+  box-shadow: 0 2px 8px var(--accent-glow);
 }
 
 .app-header__add-btn:hover {
-  background: rgba(212, 175, 55, 0.18);
-  border-color: rgba(212, 175, 55, 0.35);
-  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.15);
+  filter: brightness(1.1);
+  box-shadow: 0 4px 20px var(--accent-glow);
+  transform: translateY(-1px);
 }
 
 .app-header__right {
@@ -106,8 +107,8 @@
 .app-header__hints kbd {
   display: inline-block;
   padding: 1px 5px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 4px;
   font-family: 'DM Sans', sans-serif;
   font-size: 10px;
@@ -167,7 +168,7 @@
   font-size: 11px;
   font-weight: 500;
   color: var(--text-quaternary);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--card-bg);
   padding: 2px 8px;
   border-radius: 100px;
 }
@@ -228,15 +229,15 @@
   cursor: pointer;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 30px rgba(212, 175, 55, 0.3),
-    0 0 0 4px rgba(212, 175, 55, 0.08);
+  box-shadow: 0 8px 30px var(--accent-glow),
+    0 0 0 4px var(--accent-gold-dim);
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .fab:hover {
   transform: scale(1.08);
-  box-shadow: 0 12px 40px rgba(212, 175, 55, 0.4),
-    0 0 0 6px rgba(212, 175, 55, 0.12);
+  box-shadow: 0 12px 40px var(--accent-glow),
+    0 0 0 6px var(--accent-gold-dim);
 }
 
 .fab:active {

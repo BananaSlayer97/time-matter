@@ -18,7 +18,7 @@
     background: var(--surface-elevated);
     border: 1px solid var(--card-border);
     border-radius: 12px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    box-shadow: var(--shadow-elevated, 0 12px 40px rgba(0, 0, 0, 0.35));
     animation: toastIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     overflow: hidden;
 }
@@ -46,12 +46,12 @@
 }
 
 .toast--info .toast__icon {
-    background: rgba(130, 202, 255, 0.15);
+    background: var(--accent-ice-glow);
     color: var(--accent-ice);
 }
 
 .toast--undo .toast__icon {
-    background: rgba(212, 175, 55, 0.15);
+    background: var(--accent-gold-dim);
     color: var(--accent-gold);
 }
 

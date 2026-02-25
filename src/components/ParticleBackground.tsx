@@ -52,6 +52,8 @@ export function ParticleBackground() {
             const particles = particlesRef.current;
             const mouse = mouseRef.current;
 
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
             for (let i = 0; i < particles.length; i++) {
                 const p = particles[i];
 
@@ -81,7 +83,11 @@ export function ParticleBackground() {
                 // Draw particle
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `hsla(${p.hue}, 80%, 70%, ${p.opacity})`;
+                if (isLight) {
+                    ctx.fillStyle = `hsla(${p.hue}, 50%, 40%, ${p.opacity * 0.6})`;
+                } else {
+                    ctx.fillStyle = `hsla(${p.hue}, 80%, 70%, ${p.opacity})`;
+                }
                 ctx.fill();
 
                 // Draw connections
@@ -94,7 +100,12 @@ export function ParticleBackground() {
                         ctx.beginPath();
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `hsla(40, 60%, 60%, ${0.08 * (1 - cdist / 120)})`;
+                        const lineAlpha = 0.08 * (1 - cdist / 120);
+                        if (isLight) {
+                            ctx.strokeStyle = `hsla(40, 40%, 30%, ${lineAlpha * 0.5})`;
+                        } else {
+                            ctx.strokeStyle = `hsla(40, 60%, 60%, ${lineAlpha})`;
+                        }
                         ctx.lineWidth = 0.5;
                         ctx.stroke();
                     }

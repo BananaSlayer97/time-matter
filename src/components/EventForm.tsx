@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { CATEGORIES } from '../types';
-import type { TimeEvent, EventCategory } from '../types';
+import { CATEGORIES, REMINDER_PRESETS } from '../types';
+import type { TimeEvent, EventCategory, CategoryInfo } from '../types';
 import './EventForm.css';
 
 interface EventFormProps {
@@ -9,30 +9,27 @@ interface EventFormProps {
     onSave: (event: Omit<TimeEvent, 'id' | 'createdAt' | 'order'>) => void;
     onUpdate?: (id: string, updates: Partial<Omit<TimeEvent, 'id' | 'createdAt'>>) => void;
     editingEvent?: TimeEvent | null;
+    customCategories?: Record<string, CategoryInfo>;
 }
 
 const PRESET_COLORS = [
-    '#D4AF37', // gold
-    '#82CAFF', // ice blue  
-    '#f093fb', // pink
-    '#43e97b', // green
-    '#fa709a', // coral
-    '#4facfe', // blue
-    '#a18cd1', // purple
-    '#fee140', // yellow
-    '#f5576c', // red
-    '#38f9d7', // teal
+    '#D4AF37', '#82CAFF', '#f093fb', '#43e97b', '#fa709a',
+    '#4facfe', '#a18cd1', '#fee140', '#f5576c', '#38f9d7',
 ];
 
-export function EventForm({ isOpen, onClose, onSave, onUpdate, editingEvent }: EventFormProps) {
+export function EventForm({ isOpen, onClose, onSave, onUpdate, editingEvent, customCategories = {} }: EventFormProps) {
     const [name, setName] = useState('');
     const [targetDate, setTargetDate] = useState('');
     const [category, setCategory] = useState<EventCategory>('custom');
     const [color, setColor] = useState(PRESET_COLORS[0]);
     const [recurring, setRecurring] = useState<'none' | 'yearly'>('none');
     const [note, setNote] = useState('');
+    const [reminderMinutes, setReminderMinutes] = useState(0);
     const overlayRef = useRef<HTMLDivElement>(null);
     const nameInputRef = useRef<HTMLInputElement>(null);
+
+    // Merge built-in + custom categories
+    const allCategories = { ...CATEGORIES, ...customCategories };
 
     useEffect(() => {
         if (editingEvent) {
@@ -46,6 +43,7 @@ export function EventForm({ isOpen, onClose, onSave, onUpdate, editingEvent }: E
             setColor(editingEvent.color);
             setRecurring(editingEvent.recurring || 'none');
             setNote(editingEvent.note || '');
+            setReminderMinutes(editingEvent.reminderMinutes || 0);
         } else {
             setName('');
             setTargetDate('');
@@ -53,6 +51,7 @@ export function EventForm({ isOpen, onClose, onSave, onUpdate, editingEvent }: E
             setColor(PRESET_COLORS[0]);
             setRecurring('none');
             setNote('');
+            setReminderMinutes(0);
         }
     }, [editingEvent, isOpen]);
 
@@ -78,24 +77,20 @@ export function EventForm({ isOpen, onClose, onSave, onUpdate, editingEvent }: E
         e.preventDefault();
         if (!name.trim() || !targetDate) return;
 
+        const payload = {
+            name: name.trim(),
+            targetDate: new Date(targetDate).toISOString(),
+            category,
+            color,
+            recurring,
+            note: note.trim() || undefined,
+            reminderMinutes: reminderMinutes || undefined,
+        };
+
         if (editingEvent && onUpdate) {
-            onUpdate(editingEvent.id, {
-                name: name.trim(),
-                targetDate: new Date(targetDate).toISOString(),
-                category,
-                color,
-                recurring,
-                note: note.trim() || undefined,
-            });
+            onUpdate(editingEvent.id, payload);
         } else {
-            onSave({
-                name: name.trim(),
-                targetDate: new Date(targetDate).toISOString(),
-                category,
-                color,
-                recurring,
-                note: note.trim() || undefined,
-            });
+            onSave(payload);
         }
         onClose();
     };
@@ -150,7 +145,7 @@ export function EventForm({ isOpen, onClose, onSave, onUpdate, editingEvent }: E
                     <div className="form-group">
                         <label className="form-label">分类</label>
                         <div className="form-categories">
-                            {(Object.entries(CATEGORIES) as [EventCategory, typeof CATEGORIES[EventCategory]][]).map(([key, cat]) => (
+                            {(Object.entries(allCategories) as [string, CategoryInfo][]).map(([key, cat]) => (
                                 <button
                                     key={key}
                                     type="button"
@@ -179,19 +174,36 @@ export function EventForm({ isOpen, onClose, onSave, onUpdate, editingEvent }: E
                         </div>
                     </div>
 
-                    <div className="form-group">
-                        <label className="form-label">周期</label>
-                        <div className="form-toggle-row">
-                            <button
-                                type="button"
-                                className={`form-toggle-btn ${recurring === 'none' ? 'active' : ''}`}
-                                onClick={() => setRecurring('none')}
-                            >一次性</button>
-                            <button
-                                type="button"
-                                className={`form-toggle-btn ${recurring === 'yearly' ? 'active' : ''}`}
-                                onClick={() => setRecurring('yearly')}
-                            >🔁 每年循环</button>
+                    <div className="form-row">
+                        <div className="form-group form-group--half">
+                            <label className="form-label">周期</label>
+                            <div className="form-toggle-row">
+                                <button
+                                    type="button"
+                                    className={`form-toggle-btn ${recurring === 'none' ? 'active' : ''}`}
+                                    onClick={() => setRecurring('none')}
+                                >一次性</button>
+                                <button
+                                    type="button"
+                                    className={`form-toggle-btn ${recurring === 'yearly' ? 'active' : ''}`}
+                                    onClick={() => setRecurring('yearly')}
+                                >🔁 每年</button>
+                            </div>
+                        </div>
+
+                        <div className="form-group form-group--half">
+                            <label className="form-label">⏰ 提醒</label>
+                            <select
+                                className="form-input form-select"
+                                value={reminderMinutes}
+                                onChange={e => setReminderMinutes(Number(e.target.value))}
+                            >
+                                {REMINDER_PRESETS.map(p => (
+                                    <option key={p.value} value={p.value}>
+                                        {p.label}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </div>
 

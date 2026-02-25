@@ -64,8 +64,8 @@
 
 .empty-state__btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(212, 175, 55, 0.3);
-    background: #e6c84a;
+    box-shadow: 0 12px 40px var(--accent-glow);
+    filter: brightness(1.1);
 }
 
 .empty-state__btn:active {

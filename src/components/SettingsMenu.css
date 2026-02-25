@@ -8,8 +8,8 @@
     justify-content: center;
     width: 38px;
     height: 38px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
     border-radius: 10px;
     color: var(--text-secondary);
     cursor: pointer;
@@ -17,22 +17,25 @@
 }
 
 .settings-menu__trigger:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--surface-elevated);
     color: var(--text-primary);
+    border-color: var(--accent-gold-dim);
 }
 
 .settings-menu__dropdown {
     position: absolute;
     top: calc(100% + 8px);
     right: 0;
-    min-width: 200px;
+    min-width: 210px;
     background: var(--surface-elevated);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--card-border);
     border-radius: 14px;
     padding: 6px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--shadow-elevated, 0 20px 60px rgba(0, 0, 0, 0.5));
     animation: dropdownIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     z-index: 200;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 }
 
 .settings-menu__item {
@@ -54,7 +57,7 @@
 }
 
 .settings-menu__item:hover:not(.disabled) {
-    background: rgba(255, 255, 255, 0.06);
+    background: var(--accent-gold-dim);
     color: var(--text-primary);
 }
 
@@ -65,7 +68,7 @@
 
 .settings-menu__divider {
     height: 1px;
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--card-border);
     margin: 4px 8px;
 }
 

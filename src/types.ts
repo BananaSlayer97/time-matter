@@ -2,21 +2,28 @@ export interface TimeEvent {
   id: string;
   name: string;
   targetDate: string; // ISO string
-  category: EventCategory;
+  category: string; // now a string key (supports custom categories)
   color: string;
   createdAt: string; // ISO string
   order: number;
   recurring?: 'none' | 'yearly'; // recurring mode
   note?: string; // optional note
+  pinned?: boolean; // pinned to top
+  archived?: boolean; // archived (hidden from main view)
+  reminderMinutes?: number; // custom reminder: minutes before event
 }
 
-export type EventCategory =
+// Built-in category keys
+export type BuiltinCategory =
   | 'birthday'
   | 'anniversary'
   | 'goal'
   | 'work'
   | 'travel'
   | 'custom';
+
+// EventCategory is now a string to support custom categories
+export type EventCategory = string;
 
 export interface TimeDiff {
   isPast: boolean;
@@ -34,7 +41,7 @@ export interface CategoryInfo {
   gradient: string;
 }
 
-export const CATEGORIES: Record<EventCategory, CategoryInfo> = {
+export const BUILTIN_CATEGORIES: Record<BuiltinCategory, CategoryInfo> = {
   birthday: {
     label: '生日',
     icon: '🎂',
@@ -66,3 +73,18 @@ export const CATEGORIES: Record<EventCategory, CategoryInfo> = {
     gradient: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
   },
 };
+
+// Backwards-compatible alias
+export const CATEGORIES = BUILTIN_CATEGORIES;
+
+// Reminder presets (in minutes)
+export const REMINDER_PRESETS = [
+  { label: '不提醒', value: 0 },
+  { label: '10 分钟前', value: 10 },
+  { label: '30 分钟前', value: 30 },
+  { label: '1 小时前', value: 60 },
+  { label: '3 小时前', value: 180 },
+  { label: '1 天前', value: 1440 },
+  { label: '3 天前', value: 4320 },
+  { label: '1 周前', value: 10080 },
+];

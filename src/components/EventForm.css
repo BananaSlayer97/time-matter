@@ -20,9 +20,9 @@
     max-height: calc(100vh - 40px);
     overflow-y: auto;
     background: var(--surface-elevated);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--card-border);
     border-radius: 20px;
-    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--shadow-elevated, 0 40px 100px rgba(0, 0, 0, 0.5));
     animation: modalSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -47,8 +47,8 @@
     justify-content: center;
     width: 36px;
     height: 36px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
     border-radius: 10px;
     color: var(--text-secondary);
     cursor: pointer;
@@ -56,7 +56,7 @@
 }
 
 .form-modal__close:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--accent-gold-dim);
     color: var(--text-primary);
 }
 
@@ -86,8 +86,8 @@
 .form-input {
     width: 100%;
     padding: 14px 16px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
     border-radius: 12px;
     color: var(--text-primary);
     font-family: 'DM Sans', sans-serif;
@@ -99,7 +99,7 @@
 
 .form-input:focus {
     border-color: var(--accent-gold);
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
 .form-input::placeholder {
@@ -125,8 +125,8 @@
     align-items: center;
     gap: 6px;
     padding: 14px 8px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
     border-radius: 12px;
     color: var(--text-secondary);
     cursor: pointer;
@@ -134,12 +134,12 @@
 }
 
 .form-category-btn:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-gold-dim);
+    color: var(--text-primary);
 }
 
 .form-category-btn.active {
-    background: rgba(212, 175, 55, 0.1);
+    background: var(--accent-gold-dim);
     border-color: var(--accent-gold);
     color: var(--accent-gold);
 }
@@ -183,6 +183,27 @@
     transform: scale(1.15);
 }
 
+/* Side-by-side row */
+.form-row {
+    display: flex;
+    gap: 12px;
+}
+
+.form-group--half {
+    flex: 1;
+    min-width: 0;
+}
+
+.form-select {
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+}
+
 /* Toggle Row */
 .form-toggle-row {
     display: flex;
@@ -192,8 +213,8 @@
 .form-toggle-btn {
     flex: 1;
     padding: 10px 14px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
     border-radius: 10px;
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
@@ -204,11 +225,11 @@
 }
 
 .form-toggle-btn:hover {
-    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--accent-gold-dim);
 }
 
 .form-toggle-btn.active {
-    background: rgba(212, 175, 55, 0.1);
+    background: var(--accent-gold-dim);
     border-color: var(--accent-gold);
     color: var(--accent-gold);
 }
@@ -240,13 +261,13 @@
 }
 
 .form-btn--secondary {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--card-bg);
     color: var(--text-secondary);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--card-border);
 }
 
 .form-btn--secondary:hover {
-    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent-gold-dim);
     color: var(--text-primary);
 }
 
@@ -257,7 +278,7 @@
 
 .form-btn--primary:hover {
     background: #e6c84a;
-    box-shadow: 0 8px 30px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 8px 30px var(--accent-glow);
 }
 
 .form-btn--primary:disabled {

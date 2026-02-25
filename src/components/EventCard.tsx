@@ -12,6 +12,47 @@ interface EventCardProps {
     index: number;
 }
 
+/** Natural language time description */
+function describeTime(days: number, isPast: boolean): string {
+    const abs = Math.abs(days);
+    if (abs === 0) return '就是今天';
+    if (abs === 1) return isPast ? '昨天' : '明天';
+    if (abs < 7) return isPast ? `${abs} 天前` : `${abs} 天后`;
+    if (abs < 30) {
+        const weeks = Math.floor(abs / 7);
+        return isPast ? `${weeks} 周前` : `${weeks} 周后`;
+    }
+    if (abs < 365) {
+        const months = Math.floor(abs / 30);
+        return isPast ? `${months} 个月前` : `${months} 个月后`;
+    }
+    const years = (abs / 365).toFixed(1);
+    return isPast ? `${years} 年前` : `${years} 年后`;
+}
+
+/** Calculate yearly progress for recurring events */
+function getYearlyProgress(targetDate: string): number {
+    const now = new Date();
+    const target = new Date(targetDate);
+    // Get this year's occurrence
+    const thisYear = new Date(now.getFullYear(), target.getMonth(), target.getDate());
+    const lastYear = new Date(now.getFullYear() - 1, target.getMonth(), target.getDate());
+    const nextYear = new Date(now.getFullYear() + 1, target.getMonth(), target.getDate());
+
+    let start: Date, end: Date;
+    if (now >= thisYear) {
+        start = thisYear;
+        end = nextYear;
+    } else {
+        start = lastYear;
+        end = thisYear;
+    }
+
+    const total = end.getTime() - start.getTime();
+    const elapsed = now.getTime() - start.getTime();
+    return Math.min(100, Math.max(0, (elapsed / total) * 100));
+}
+
 export function EventCard({ event, onEdit, onDelete, onClick, index }: EventCardProps) {
     const diff = useCountdown(event.targetDate);
     const category = CATEGORIES[event.category];
@@ -26,6 +67,24 @@ export function EventCard({ event, onEdit, onDelete, onClick, index }: EventCard
         hour: '2-digit',
         minute: '2-digit',
     });
+
+    // Natural language description
+    const naturalTime = describeTime(diff.days, diff.isPast);
+
+    // Creation date
+    const createdDate = new Date(event.createdAt);
+    const createdAgo = Math.floor((Date.now() - createdDate.getTime()) / 86400000);
+    const createdStr = createdAgo === 0 ? '今天创建' : createdAgo < 30
+        ? `${createdAgo} 天前创建`
+        : `${Math.floor(createdAgo / 30)} 个月前创建`;
+
+    // Total day span from creation to target
+    const totalSpanDays = Math.abs(Math.floor(
+        (targetDateObj.getTime() - createdDate.getTime()) / 86400000
+    ));
+
+    // Yearly progress for recurring events
+    const yearlyProgress = event.recurring === 'yearly' ? getYearlyProgress(event.targetDate) : null;
 
     return (
         <div
@@ -73,24 +132,70 @@ export function EventCard({ event, onEdit, onDelete, onClick, index }: EventCard
 
             <h3 className="event-card__name">{event.name}</h3>
 
-            <div className="event-card__date">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                    <line x1="16" y1="2" x2="16" y2="6" />
-                    <line x1="8" y1="2" x2="8" y2="6" />
-                    <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
-                <span>{formattedDate} {formattedTime}</span>
+            {/* Date + Natural language */}
+            <div className="event-card__date-row">
+                <div className="event-card__date">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                    <span>{formattedDate} {formattedTime}</span>
+                </div>
+                <span className="event-card__natural-time">{naturalTime}</span>
             </div>
 
-            <div className="event-card__status-badge">
-                {diff.isPast ? (
-                    <span className="badge badge--past">已过去</span>
-                ) : (
-                    <span className="badge badge--future">倒计时</span>
-                )}
+            {/* Note preview */}
+            {event.note && (
+                <div className="event-card__note">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="17" y1="10" x2="3" y2="10" />
+                        <line x1="21" y1="6" x2="3" y2="6" />
+                        <line x1="21" y1="14" x2="3" y2="14" />
+                        <line x1="17" y1="18" x2="3" y2="18" />
+                    </svg>
+                    <span>{event.note.length > 50 ? event.note.slice(0, 50) + '…' : event.note}</span>
+                </div>
+            )}
+
+            {/* Status + counting info */}
+            <div className="event-card__info-row">
+                <div className="event-card__status-badge">
+                    {diff.isPast ? (
+                        <span className="badge badge--past">已过去</span>
+                    ) : (
+                        <span className="badge badge--future">倒计时</span>
+                    )}
+                </div>
+                <div className="event-card__info-tags">
+                    <span className="event-card__info-tag" title={`创建于 ${createdDate.toLocaleDateString('zh-CN')}`}>
+                        {createdStr}
+                    </span>
+                    {totalSpanDays > 0 && (
+                        <span className="event-card__info-tag">
+                            跨度 {totalSpanDays} 天
+                        </span>
+                    )}
+                </div>
             </div>
 
+            {/* Yearly progress bar for recurring events */}
+            {yearlyProgress !== null && (
+                <div className="event-card__yearly-progress">
+                    <div className="event-card__yearly-bar">
+                        <div
+                            className="event-card__yearly-fill"
+                            style={{ width: `${yearlyProgress}%` }}
+                        />
+                    </div>
+                    <span className="event-card__yearly-label">
+                        年度进度 {Math.round(yearlyProgress)}%
+                    </span>
+                </div>
+            )}
+
+            {/* Countdown digits */}
             <div className="event-card__countdown">
                 <TimeDigit value={diff.days} label="天" isPast={diff.isPast} />
                 <span className="event-card__separator">:</span>

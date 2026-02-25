@@ -17,8 +17,8 @@
   justify-content: center;
   width: 36px;
   height: 52px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 8px;
   font-family: 'DM Sans', sans-serif;
   font-size: 28px;
@@ -54,10 +54,12 @@
     transform: rotateX(0deg);
     opacity: 1;
   }
+
   50% {
     transform: rotateX(-90deg);
     opacity: 0.5;
   }
+
   100% {
     transform: rotateX(0deg);
     opacity: 1;

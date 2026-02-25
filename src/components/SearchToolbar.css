@@ -38,7 +38,7 @@
 
 .search-input:focus {
     border-color: var(--accent-gold-dim);
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.08);
+    box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
 .search-input::placeholder {
@@ -112,7 +112,7 @@
 }
 
 .search-view-btn.active {
-    background: rgba(212, 175, 55, 0.1);
+    background: var(--accent-gold-dim);
     color: var(--accent-gold);
 }
 
@@ -138,7 +138,7 @@
     align-items: center;
     gap: 5px;
     padding: 6px 14px;
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 100px;
     color: var(--text-secondary);
@@ -152,11 +152,11 @@
 }
 
 .search-cat-pill:hover {
-    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--accent-gold-dim);
 }
 
 .search-cat-pill.active {
-    background: rgba(212, 175, 55, 0.1);
+    background: var(--accent-gold-dim);
     border-color: var(--accent-gold-dim);
     color: var(--accent-gold);
 }

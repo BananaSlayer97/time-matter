@@ -10,13 +10,13 @@
         border-color 0.35s ease;
     animation: cardEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
     cursor: pointer;
+    box-shadow: var(--shadow-card, 0 2px 12px rgba(0, 0, 0, 0.2));
 }
 
 .event-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
-        0 0 40px rgba(var(--card-accent-rgb, 212, 175, 55), 0.08);
-    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-elevated, 0 20px 60px rgba(0, 0, 0, 0.3));
+    border-color: var(--accent-gold-dim);
 }
 
 /* Accent line at top */
@@ -26,12 +26,12 @@
     left: 0;
     right: 0;
     height: 3px;
-    opacity: 0.8;
-    transition: opacity 0.3s ease;
+    opacity: 1;
+    transition: height 0.3s ease;
 }
 
 .event-card:hover .event-card__accent {
-    opacity: 1;
+    height: 4px;
 }
 
 /* Header */
@@ -85,8 +85,8 @@
     justify-content: center;
     width: 32px;
     height: 32px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
     border-radius: 8px;
     color: var(--text-secondary);
     cursor: pointer;
@@ -94,7 +94,7 @@
 }
 
 .event-card__btn:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--accent-gold-dim);
     color: var(--text-primary);
 }
 
@@ -114,7 +114,15 @@
     line-height: 1.3;
 }
 
-/* Date */
+/* Date row */
+.event-card__date-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
 .event-card__date {
     display: flex;
     align-items: center;
@@ -122,16 +130,112 @@
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     color: var(--text-tertiary);
-    margin-bottom: 16px;
 }
 
 .event-card__date svg {
     opacity: 0.5;
+    flex-shrink: 0;
+}
+
+.event-card__natural-time {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent-gold);
+    background: var(--accent-gold-dim);
+    padding: 2px 8px;
+    border-radius: 100px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.event-card--past .event-card__natural-time {
+    color: var(--accent-ice);
+    background: var(--accent-ice-glow);
+}
+
+/* Note preview */
+.event-card__note {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    background: var(--card-bg);
+    border-left: 2px solid var(--accent-gold-dim);
+    border-radius: 0 6px 6px 0;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.event-card__note svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    opacity: 0.4;
+}
+
+/* Info row (badge + tags) */
+.event-card__info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
 }
 
 /* Status badge */
 .event-card__status-badge {
-    margin-bottom: 16px;
+    flex-shrink: 0;
+}
+
+.event-card__info-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.event-card__info-tag {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    color: var(--text-quaternary);
+    padding: 2px 6px;
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+/* Yearly progress bar (recurring events) */
+.event-card__yearly-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.event-card__yearly-bar {
+    flex: 1;
+    height: 3px;
+    background: var(--card-border);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.event-card__yearly-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-gold), var(--accent-ice));
+    border-radius: 2px;
+    transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.event-card__yearly-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-quaternary);
+    white-space: nowrap;
 }
 
 .badge {
@@ -147,15 +251,15 @@
 }
 
 .badge--future {
-    background: rgba(212, 175, 55, 0.12);
+    background: var(--accent-gold-dim);
     color: var(--accent-gold);
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    border: 1px solid var(--accent-gold-dim);
 }
 
 .badge--past {
-    background: rgba(130, 202, 255, 0.1);
+    background: var(--accent-ice-glow);
     color: var(--accent-ice);
-    border: 1px solid rgba(130, 202, 255, 0.2);
+    border: 1px solid var(--accent-ice-glow);
 }
 
 /* Countdown area */
