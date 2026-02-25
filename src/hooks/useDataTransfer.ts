@@ -9,13 +9,19 @@ interface ExportData {
     events: TimeEvent[];
 }
 
+interface ToastCallbacks {
+    showSuccess: (message: string) => void;
+    showError: (message: string) => void;
+}
+
 export function useDataTransfer(
     events: TimeEvent[],
-    setEvents: (events: TimeEvent[]) => void
+    setEvents: (events: TimeEvent[]) => void,
+    toast?: ToastCallbacks
 ) {
     const exportData = useCallback(() => {
         if (events.length === 0) {
-            alert('当前没有事件数据可导出');
+            toast?.showError('当前没有事件数据可导出');
             return;
         }
         const data: ExportData = {
@@ -34,12 +40,12 @@ export function useDataTransfer(
         a.style.display = 'none';
         document.body.appendChild(a);
         a.click();
-        // Delay cleanup to ensure download starts
         setTimeout(() => {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }, 200);
-    }, [events]);
+        toast?.showSuccess(`已导出 ${events.length} 个事件`);
+    }, [events, toast]);
 
     const importData = useCallback(() => {
         const input = document.createElement('input');
@@ -57,7 +63,6 @@ export function useDataTransfer(
                     throw new Error('Invalid format');
                 }
 
-                // Validate each event has required fields
                 const validEvents = parsed.events.filter(
                     (ev) =>
                         ev.id &&
@@ -69,22 +74,24 @@ export function useDataTransfer(
                 );
 
                 if (validEvents.length === 0) {
-                    alert('未找到有效的事件数据');
+                    toast?.showError('未找到有效的事件数据');
                     return;
                 }
 
+                // Use confirm as fallback since it's a destructive action
                 const confirmed = confirm(
                     `即将导入 ${validEvents.length} 个事件，是否替换当前所有数据？`
                 );
                 if (confirmed) {
                     setEvents(validEvents);
+                    toast?.showSuccess(`成功导入 ${validEvents.length} 个事件`);
                 }
-            } catch {
-                alert('文件格式错误，请选择有效的 Time Matter 备份文件');
+            } catch (_err) {
+                toast?.showError('文件格式错误，请选择有效的备份文件');
             }
         };
         input.click();
-    }, [setEvents]);
+    }, [setEvents, toast]);
 
     return { exportData, importData };
 }

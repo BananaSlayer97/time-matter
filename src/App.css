@@ -93,6 +93,29 @@
   gap: 8px;
 }
 
+.app-header__hints {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 8px 28px 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  color: var(--text-quaternary);
+  text-align: right;
+}
+
+.app-header__hints kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  margin: 0 1px;
+}
+
 /* ---- Main ---- */
 .app-main {
   max-width: var(--max-width);
@@ -106,7 +129,7 @@
 .events-container {
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: 24px;
 }
 
 /* ---- Section ---- */
@@ -154,6 +177,28 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
   gap: 20px;
+}
+
+/* ---- Events List ---- */
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.events-list .event-card {
+  padding: 16px 20px;
+  border-radius: 12px;
+}
+
+.events-list .event-card__countdown {
+  padding-top: 8px;
+  gap: 6px;
+}
+
+.events-list .event-card__name {
+  font-size: 18px;
+  margin-bottom: 4px;
 }
 
 /* Card wrapper for delete animation */
@@ -228,6 +273,10 @@
 
   .fab {
     display: flex;
+  }
+
+  .app-header__hints {
+    display: none;
   }
 }
 
