@@ -19,11 +19,15 @@ import { Onboarding } from './components/Onboarding';
 import { CategoryManager } from './components/CategoryManager';
 import { TimeProgress } from './components/TimeProgress';
 import { TemplateGallery } from './components/TemplateGallery';
+import { CompactRow } from './components/CompactRow';
+import { AuthModal } from './components/AuthModal';
+import { useAuth } from './hooks/useAuth';
+import { useSupabaseSync } from './hooks/useSupabaseSync';
 import { exportToICal } from './utils/ical';
 import type { TimeEvent } from './types';
 import './App.css';
 
-type ViewMode = 'grid' | 'list';
+type ViewMode = 'grid' | 'list' | 'compact';
 
 // Memoize EventCard to avoid re-renders
 const MemoizedEventCard = memo(EventCard);
@@ -48,6 +52,8 @@ function App() {
   const { exportData, importData } = useDataTransfer(events, replaceAllEvents, toastCallbacks);
   const { requestPermission, permissionStatus } = useNotifications(events);
   const { theme, setTheme: setAppTheme } = useTheme();
+  const { user, signInWithEmail, signUpWithEmail, signInWithGithub, signOut } = useAuth();
+  useSupabaseSync(user, events, replaceAllEvents);
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isCatManagerOpen, setIsCatManagerOpen] = useState(false);
@@ -58,6 +64,7 @@ function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [filteredEvents, setFilteredEvents] = useState<TimeEvent[]>([]);
   const [showArchived, setShowArchived] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
   const deletedRef = useRef<TimeEvent | null>(null);
 
   const handleAdd = useCallback(() => {
@@ -173,6 +180,9 @@ function App() {
     theme,
     onSetTheme: setAppTheme,
     onManageCategories: () => setIsCatManagerOpen(true),
+    user,
+    onOpenAuth: () => setIsAuthOpen(true),
+    onSignOut: signOut,
   };
 
   return (
@@ -251,8 +261,8 @@ function App() {
             <div className="events-container">
               {!showArchived && (
                 <>
-                  <TimeProgress />
                   <StatsBar events={events.filter(e => !e.archived)} />
+                  <TimeProgress />
                 </>
               )}
 
@@ -278,8 +288,10 @@ function App() {
                         置顶事件
                         <span className="events-section__count">{pinnedEvents.length}</span>
                       </h2>
-                      <div className={viewMode === 'grid' ? 'events-grid' : 'events-list'}>
-                        {pinnedEvents.map((event, index) => (
+                      <div className={viewMode === 'grid' ? 'events-grid' : viewMode === 'list' ? 'events-list' : 'events-compact'}>
+                        {viewMode === 'compact' ? pinnedEvents.map(event => (
+                          <CompactRow key={event.id} event={event} onClick={handleCardClick} />
+                        )) : pinnedEvents.map((event, index) => (
                           <div key={event.id} className={`event-card-wrapper ${deletingId === event.id ? 'deleting' : ''}`}>
                             <MemoizedEventCard
                               event={event}
@@ -305,8 +317,10 @@ function App() {
                         即将到来
                         <span className="events-section__count">{futureEvents.length}</span>
                       </h2>
-                      <div className={viewMode === 'grid' ? 'events-grid' : 'events-list'}>
-                        {futureEvents.map((event, index) => (
+                      <div className={viewMode === 'grid' ? 'events-grid' : viewMode === 'list' ? 'events-list' : 'events-compact'}>
+                        {viewMode === 'compact' ? futureEvents.map(event => (
+                          <CompactRow key={event.id} event={event} onClick={handleCardClick} />
+                        )) : futureEvents.map((event, index) => (
                           <div key={event.id} className={`event-card-wrapper ${deletingId === event.id ? 'deleting' : ''}`}>
                             <MemoizedEventCard
                               event={event}
@@ -332,8 +346,10 @@ function App() {
                         已经过去
                         <span className="events-section__count">{pastEvents.length}</span>
                       </h2>
-                      <div className={viewMode === 'grid' ? 'events-grid' : 'events-list'}>
-                        {pastEvents.map((event, index) => (
+                      <div className={viewMode === 'grid' ? 'events-grid' : viewMode === 'list' ? 'events-list' : 'events-compact'}>
+                        {viewMode === 'compact' ? pastEvents.map(event => (
+                          <CompactRow key={event.id} event={event} onClick={handleCardClick} />
+                        )) : pastEvents.map((event, index) => (
                           <div key={event.id} className={`event-card-wrapper ${deletingId === event.id ? 'deleting' : ''}`}>
                             <MemoizedEventCard
                               event={event}
@@ -399,6 +415,14 @@ function App() {
             onEdit={handleEdit}
           />
         )}
+
+        <AuthModal
+          isOpen={isAuthOpen}
+          onClose={() => setIsAuthOpen(false)}
+          onSignIn={signInWithEmail}
+          onSignUp={signUpWithEmail}
+          onGithub={signInWithGithub}
+        />
 
         <ToastContainer toasts={toasts} onDismiss={removeToast} />
         <Onboarding onComplete={() => { }} />

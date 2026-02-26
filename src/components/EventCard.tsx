@@ -251,8 +251,7 @@ export function EventCard({ event, onEdit, onDelete, onDuplicate, onPin, onArchi
                 <TimeDigit value={diff.seconds} label="秒" isPast={diff.isPast} />
             </div>
 
-            {/* Progress shimmer effect */}
-            <div className="event-card__shimmer" />
+            {/* Shimmer removed for cleaner look */}
         </div>
     );
 }

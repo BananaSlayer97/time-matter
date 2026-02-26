@@ -149,7 +149,7 @@
 .app-main {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 32px 24px 100px;
+  padding: 24px 24px 80px;
   position: relative;
   z-index: 1;
 }
@@ -158,7 +158,7 @@
 .events-container {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 /* ---- Section ---- */
@@ -171,9 +171,9 @@
   font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: 20px;
-  padding-left: 4px;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+  padding-left: 2px;
 }
 
 .events-section__dot {
@@ -209,15 +209,15 @@
 /* ---- Events Grid ---- */
 .events-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
 }
 
 /* ---- Events List ---- */
 .events-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .events-list .event-card {

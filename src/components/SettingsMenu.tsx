@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import type { Theme } from '../hooks/useTheme';
 import { THEME_OPTIONS } from '../hooks/useTheme';
+import type { User } from '@supabase/supabase-js';
 import './SettingsMenu.css';
 
 interface SettingsMenuProps {
@@ -11,6 +12,10 @@ interface SettingsMenuProps {
     theme: Theme;
     onSetTheme: (t: Theme) => void;
     onManageCategories: () => void;
+    // Auth props
+    user: User | null;
+    onOpenAuth: () => void;
+    onSignOut: () => void;
 }
 
 export function SettingsMenu({
@@ -21,6 +26,9 @@ export function SettingsMenu({
     theme,
     onSetTheme,
     onManageCategories,
+    user,
+    onOpenAuth,
+    onSignOut,
 }: SettingsMenuProps) {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -60,6 +68,41 @@ export function SettingsMenu({
 
             {isOpen && (
                 <div className="settings-menu__dropdown">
+                    {/* Account Section */}
+                    <div className="settings-menu__section-label">账号</div>
+                    {user ? (
+                        <div className="settings-menu__account">
+                            <div className="settings-menu__account-info">
+                                <span className="settings-menu__account-avatar">
+                                    {user.email?.charAt(0).toUpperCase() || '?'}
+                                </span>
+                                <div className="settings-menu__account-details">
+                                    <span className="settings-menu__account-email">{user.email}</span>
+                                    <span className="settings-menu__account-sync">☁️ 已同步</span>
+                                </div>
+                            </div>
+                            <button className="settings-menu__item settings-menu__item--danger" onClick={() => { onSignOut(); setIsOpen(false); }}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                    <polyline points="16 17 21 12 16 7" />
+                                    <line x1="21" y1="12" x2="9" y2="12" />
+                                </svg>
+                                <span>退出登录</span>
+                            </button>
+                        </div>
+                    ) : (
+                        <button className="settings-menu__item settings-menu__item--accent" onClick={() => { onOpenAuth(); setIsOpen(false); }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            <span>登录 / 注册</span>
+                            <span className="settings-menu__badge-new">云同步</span>
+                        </button>
+                    )}
+
+                    <div className="settings-menu__divider" />
+
                     {/* Theme Picker */}
                     <div className="settings-menu__section-label">主题</div>
                     <div className="settings-menu__theme-grid">

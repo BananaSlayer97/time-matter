@@ -1,0 +1,70 @@
+/* ---- Compact Row (single-line event) ---- */
+.compact-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.compact-row:hover {
+    background: var(--surface-elevated);
+    border-color: var(--accent-gold-dim);
+}
+
+.compact-row__icon {
+    font-size: 14px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.compact-row__name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.compact-row__pin {
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
+.compact-row__spacer {
+    flex: 1;
+}
+
+.compact-row__time {
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+.compact-row__time--future {
+    color: var(--accent-gold);
+    background: var(--accent-gold-dim);
+}
+
+.compact-row__time--past {
+    color: var(--accent-ice);
+    background: var(--accent-ice-glow);
+}
+
+/* Compact container */
+.events-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
