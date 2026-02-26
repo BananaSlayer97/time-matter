@@ -41,7 +41,6 @@ export function CompactRow({ event, onClick }: CompactRowProps) {
             <span className="compact-row__icon">{icon}</span>
             <span className="compact-row__name">{event.name}</span>
             {event.pinned && <span className="compact-row__pin">📌</span>}
-            <span className="compact-row__spacer" />
             <span className={`compact-row__time ${diff.isPast ? 'compact-row__time--past' : 'compact-row__time--future'}`}>
                 {diff.isPast ? `${diff.text}前` : `${diff.text}后`}
             </span>

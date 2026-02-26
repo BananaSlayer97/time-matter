@@ -206,11 +206,18 @@
   border-radius: 100px;
 }
 
-/* ---- Events Grid ---- */
+/* ---- Events Grid (Intrinsic Masonry-like wrap) ---- */
 .events-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 14px;
+}
+
+.events-grid>* {
+  flex: 0 0 auto;
+  min-width: auto;
+  max-width: 100%;
 }
 
 /* ---- Events List ---- */

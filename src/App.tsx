@@ -252,10 +252,9 @@ function App() {
                   )}
                 </>
               )}
+              <HeaderToolbar {...settingsProps} />
             </div>
           </div>
-
-          <HeaderToolbar {...settingsProps} />
 
           {events.length > 0 && !showArchived && (
             <div className="app-header__hints">

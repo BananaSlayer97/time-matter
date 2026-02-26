@@ -35,7 +35,10 @@ export function TimeDigit({ value, label, isPast }: TimeDigitProps) {
 
     return (
         <div className="time-digit-container">
-            <div className={`time-digit-wrapper ${isFlipping ? 'flipping' : ''} ${isPast ? 'past' : 'future'}`}>
+            <div
+                className={`time-digit-wrapper ${isFlipping ? 'flipping' : ''} ${isPast ? 'past' : 'future'}`}
+                data-count={digitArray.length}
+            >
                 {digitArray.map((digit, i) => (
                     <span key={`${i}-${digit}`} className="time-digit-char">
                         {digit}

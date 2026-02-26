@@ -1,13 +1,8 @@
-/* ---- Header Toolbar (flat row, replaces dropdown) ---- */
+/* ---- Header Toolbar (inline in header row) ---- */
 .htoolbar {
     display: flex;
     align-items: center;
     gap: 4px;
-    padding: 6px 8px;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    flex-wrap: wrap;
 }
 
 .htoolbar__group {
