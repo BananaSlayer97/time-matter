@@ -8,14 +8,19 @@
     border: 1px solid var(--card-border);
     border-radius: 10px;
     cursor: pointer;
-    width: fit-content;
-    min-width: 200px;
-    transition: background 0.2s ease, border-color 0.2s ease;
+    width: auto;
+    min-width: 260px;
+    flex: 1 1 260px;
+    max-width: 400px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .compact-row:hover {
     background: var(--surface-elevated);
-    border-color: var(--accent-gold-dim);
+    border-color: var(--accent-gold);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .compact-row__icon {
@@ -25,9 +30,9 @@
 }
 
 .compact-row__name {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
     color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
@@ -50,22 +55,49 @@
     flex-shrink: 0;
     padding: 2px 8px;
     border-radius: 6px;
+    margin-left: auto;
 }
 
 .compact-row__time--future {
-    color: var(--accent-gold);
-    background: var(--accent-gold-dim);
+    color: var(--text-secondary);
+    background: var(--surface-secondary);
 }
 
 .compact-row__time--past {
-    color: var(--accent-ice);
-    background: var(--accent-ice-glow);
+    color: var(--text-tertiary);
+    background: var(--surface-secondary);
+}
+
+/* Unit-specific colors in compact view */
+.compact-row__unit {
+    margin: 0 1px;
+}
+
+.compact-row__unit--days {
+    color: #ff9f43;
+}
+
+.compact-row__unit--hours {
+    color: #26de81;
+}
+
+.compact-row__unit--minutes {
+    color: #4b7bec;
+}
+
+.compact-row__unit--seconds {
+    color: #eb4d4b;
+}
+
+.compact-row__unit--year {
+    color: var(--accent-gold);
 }
 
 /* Compact container */
 .events-compact {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: flex-start;
-    gap: 4px;
+    gap: 10px;
 }

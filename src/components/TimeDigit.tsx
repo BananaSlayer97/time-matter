@@ -33,8 +33,10 @@ export function TimeDigit({ value, label, isPast }: TimeDigitProps) {
 
     const digitArray = label === '天' ? dayDigits : digits;
 
+    const unitClass = label === '天' ? 'days' : label === '时' ? 'hours' : label === '分' ? 'minutes' : 'seconds';
+
     return (
-        <div className="time-digit-container">
+        <div className={`time-digit-container time-digit-container--${unitClass}`}>
             <div
                 className={`time-digit-wrapper ${isFlipping ? 'flipping' : ''} ${isPast ? 'past' : 'future'}`}
                 data-count={digitArray.length}

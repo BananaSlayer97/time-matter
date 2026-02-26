@@ -11,6 +11,8 @@ interface SearchToolbarProps {
     onFilteredEvents: (events: TimeEvent[]) => void;
     viewMode: ViewMode;
     onViewModeChange: (mode: ViewMode) => void;
+    sortBy: any;
+    onSortChange: (s: any) => void;
 }
 
 const SORT_OPTIONS: { value: SortBy; label: string }[] = [

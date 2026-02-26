@@ -7,6 +7,14 @@ const allCategories: Record<string, CategoryInfo> = CATEGORIES;
 
 interface StatsBarProps {
     events: TimeEvent[];
+    onSearch?: (q: string) => void;
+    onCategoryChange?: (c: string) => void;
+    onThemeChange?: (t: any) => void;
+    currentTheme?: any;
+    viewMode?: string;
+    onViewModeChange?: (v: any) => void;
+    onSortChange?: (s: any) => void;
+    sortBy?: string;
 }
 
 export function StatsBar({ events }: StatsBarProps) {

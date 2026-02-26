@@ -33,11 +33,46 @@
 }
 
 .time-digit-wrapper.future .time-digit-char {
-  text-shadow: 0 0 20px var(--accent-glow);
+  text-shadow: 0 0 15px var(--digit-glow);
 }
 
 .time-digit-wrapper.past .time-digit-char {
-  text-shadow: 0 0 20px var(--accent-ice-glow);
+  text-shadow: 0 0 15px var(--accent-ice-glow);
+}
+
+/* Unit Colors */
+.time-digit-container--days {
+  --digit-color: #ff9f43;
+  /* Warm Orange */
+  --digit-glow: rgba(255, 159, 67, 0.4);
+}
+
+.time-digit-container--hours {
+  --digit-color: #26de81;
+  /* Fresh Green */
+  --digit-glow: rgba(38, 222, 129, 0.4);
+}
+
+.time-digit-container--minutes {
+  --digit-color: #4b7bec;
+  /* Royal Blue */
+  --digit-glow: rgba(75, 123, 236, 0.4);
+}
+
+.time-digit-container--seconds {
+  --digit-color: #eb4d4b;
+  /* Vibrant Red */
+  --digit-glow: rgba(235, 77, 75, 0.4);
+}
+
+.time-digit-container[class*="--"] .time-digit-char {
+  color: var(--digit-color);
+  border-color: var(--digit-glow);
+}
+
+.time-digit-container[class*="--"] .time-digit-label {
+  color: var(--digit-color);
+  opacity: 0.8;
 }
 
 .time-digit-label {

@@ -129,73 +129,119 @@ function getTimeSlots(now: Date): TimeSlot[] {
 
 const STORAGE_KEY = 'tm-time-progress-collapsed';
 
-export function TimeProgress() {
+interface TimeProgressProps {
+    isFocusMode?: boolean;
+    onToggleFocus?: () => void;
+}
+
+export function TimeProgress({ isFocusMode, onToggleFocus }: TimeProgressProps) {
     const [slots, setSlots] = useState<TimeSlot[]>(() => getTimeSlots(new Date()));
-    const [collapsed, setCollapsed] = useState(() => localStorage.getItem(STORAGE_KEY) === '1');
+    const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem(STORAGE_KEY) === '1');
 
     useEffect(() => {
         const timer = setInterval(() => setSlots(getTimeSlots(new Date())), 1000);
         return () => clearInterval(timer);
     }, []);
 
-    const toggle = () => {
-        setCollapsed(prev => {
+    const toggleCollapse = () => {
+        setIsCollapsed(prev => {
             const next = !prev;
             localStorage.setItem(STORAGE_KEY, next ? '1' : '0');
             return next;
         });
     };
 
-    return (
-        <div className="time-progress">
-            <button className="time-progress__header" onClick={toggle} type="button">
-                <div className="time-progress__title">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10" />
-                        <polyline points="12 6 12 12 16 14" />
-                    </svg>
-                    时间流逝
-                </div>
-                <svg
-                    className={`time-progress__chevron ${collapsed ? 'collapsed' : ''}`}
-                    width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                >
-                    <polyline points="6 9 12 15 18 9" />
-                </svg>
-            </button>
+    const now = new Date();
+    const nowFormatted = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+    const weekDayNames = ['日', '一', '二', '三', '四', '五', '六'];
+    const weekDay = `周${weekDayNames[now.getDay()]}`;
+    const yearProgress = slots.find(s => s.label === '本年')?.percent.toFixed(1) || '0.0';
 
-            <div className={`time-progress__body ${collapsed ? 'time-progress__body--collapsed' : ''}`}>
-                <div className="time-progress__grid">
-                    {slots.map((slot) => {
-                        const color = progressColor(slot.percent);
-                        return (
-                            <div key={slot.label} className="tp-card">
-                                <div className="tp-card__header">
-                                    <span className="tp-card__icon">{slot.icon}</span>
-                                    <span className="tp-card__label">{slot.label}</span>
-                                    <span className="tp-card__percent-badge" style={{ color }}>
-                                        {slot.percent.toFixed(1)}%
-                                    </span>
-                                </div>
-                                <div className="tp-card__remaining">{slot.remaining}</div>
-                                <div className="tp-card__detail">{slot.detail}</div>
-                                <div className="tp-card__bar-track">
-                                    <div
-                                        className="tp-card__bar-fill"
-                                        style={{
-                                            width: `${Math.min(slot.percent, 100)}%`,
-                                            background: color,
-                                            boxShadow: `0 0 8px ${color}`,
-                                            opacity: 0.9,
-                                        }}
-                                    />
-                                </div>
-                                <div className="tp-card__elapsed">{slot.elapsed}</div>
-                            </div>
-                        );
-                    })}
+    return (
+        <div className={`time-progress ${isFocusMode ? 'time-progress--focus' : ''}`}>
+            {!isFocusMode && (
+                <div className="time-progress__header" onClick={toggleCollapse}>
+                    <div className="time-progress__header-left">
+                        <span className="time-progress__toggle-icon">
+                            {isCollapsed ? '展开' : '收起'}
+                        </span>
+                        <h2 className="time-progress__title">时间进度</h2>
+                    </div>
+                    <div className="time-progress__header-info">
+                        {nowFormatted} · {weekDay} · 今年已过 {yearProgress}%
+                    </div>
+                    <button
+                        className="time-progress__focus-trigger"
+                        onClick={(e) => { e.stopPropagation(); onToggleFocus?.(); }}
+                        title="开启专注模式"
+                    >
+                        专注于当下
+                    </button>
                 </div>
-            </div>
+            )}
+
+            {isFocusMode && (
+                <div className="time-progress__focus-header">
+                    <h1 className="time-progress__focus-title">专注于当下</h1>
+                    <p className="time-progress__focus-subtitle">{nowFormatted} · {weekDay}</p>
+                </div>
+            )}
+
+            {(!isCollapsed || isFocusMode) && (
+                <div className="time-progress__body">
+                    <div className="time-progress__grid">
+                        {slots.map((slot) => {
+                            const color = progressColor(slot.percent);
+                            return (
+                                <div key={slot.label} className="tp-card">
+                                    <div className="tp-card__header">
+                                        <span className="tp-card__icon">{slot.icon}</span>
+                                        <span className="tp-card__label">{slot.label}</span>
+                                        <span className="tp-card__percent-badge" style={{ color }}>
+                                            {slot.percent.toFixed(1)}%
+                                        </span>
+                                    </div>
+                                    <div className="tp-card__remaining">
+                                        {slot.label === '今天' || slot.label === '本小时' ? (
+                                            slot.remaining.split(':').map((part, i, arr) => (
+                                                <span key={i}>
+                                                    <span className={`tp-unit--${arr.length === 3 ? (i === 0 ? 'hours' : i === 1 ? 'minutes' : 'seconds') : (i === 0 ? 'minutes' : 'seconds')}`}>
+                                                        {part}
+                                                    </span>
+                                                    {i < arr.length - 1 && <span className="tp-card__separator">:</span>}
+                                                </span>
+                                            ))
+                                        ) : slot.label === '本周' ? (
+                                            <>
+                                                <span className="tp-unit--days">{slot.remaining.split(' ')[0]}</span>
+                                                {' '}
+                                                <span className="tp-unit--hours">{slot.remaining.split(' ')[1]}</span>
+                                            </>
+                                        ) : (
+                                            <span className={`tp-unit--${slot.remaining.includes('天') ? 'days' : 'minutes'}`}>
+                                                {slot.remaining}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="tp-card__detail">{slot.detail}</div>
+                                    <div className="tp-card__bar-track">
+                                        <div
+                                            className="tp-card__bar-fill"
+                                            style={{
+                                                width: `${Math.min(slot.percent, 100)}%`,
+                                                background: color,
+                                                boxShadow: `0 0 8px ${color}`,
+                                                opacity: 0.9,
+                                            }}
+                                        />
+                                    </div>
+                                    <div className="tp-card__elapsed">{slot.elapsed}</div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

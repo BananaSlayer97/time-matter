@@ -18,19 +18,20 @@ export function CompactRow({ event, onClick }: CompactRowProps) {
         const hours = Math.floor((delta % 86400000) / 3600000);
         const mins = Math.floor((delta % 3600000) / 60000);
 
-        let text = '';
+        const segments: { val: number; unit: string; class: string }[] = [];
         if (days > 365) {
-            const y = Math.floor(days / 365);
-            const d = days % 365;
-            text = `${y}年${d}天`;
+            segments.push({ val: Math.floor(days / 365), unit: '年', class: 'year' });
+            segments.push({ val: days % 365, unit: '天', class: 'days' });
         } else if (days > 0) {
-            text = `${days}天${hours}时`;
+            segments.push({ val: days, unit: '天', class: 'days' });
+            segments.push({ val: hours, unit: '时', class: 'hours' });
         } else if (hours > 0) {
-            text = `${hours}时${mins}分`;
+            segments.push({ val: hours, unit: '时', class: 'hours' });
+            segments.push({ val: mins, unit: '分', class: 'minutes' });
         } else {
-            text = `${mins}分`;
+            segments.push({ val: mins, unit: '分', class: 'minutes' });
         }
-        return { text, isPast };
+        return { segments, isPast };
     }, [event.targetDate]);
 
     const catInfo = CATEGORIES[event.category];
@@ -42,7 +43,12 @@ export function CompactRow({ event, onClick }: CompactRowProps) {
             <span className="compact-row__name">{event.name}</span>
             {event.pinned && <span className="compact-row__pin">📌</span>}
             <span className={`compact-row__time ${diff.isPast ? 'compact-row__time--past' : 'compact-row__time--future'}`}>
-                {diff.isPast ? `${diff.text}前` : `${diff.text}后`}
+                {diff.segments.map((s, i) => (
+                    <span key={i} className={`compact-row__unit compact-row__unit--${s.class}`}>
+                        {s.val}{s.unit}
+                    </span>
+                ))}
+                {diff.isPast ? '前' : '后'}
             </span>
         </div>
     );

@@ -28,17 +28,17 @@
 .htoolbar__btn {
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 5px 10px;
-    background: none;
+    gap: 6px;
+    padding: 6px 12px;
+    background: transparent;
     border: 1px solid transparent;
     border-radius: 8px;
     color: var(--text-secondary);
     font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
 }
 
@@ -46,6 +46,8 @@
     background: var(--surface-elevated);
     border-color: var(--card-border);
     color: var(--text-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .htoolbar__btn.active {
@@ -55,7 +57,8 @@
 }
 
 .htoolbar__btn:disabled {
-    opacity: 0.4;
+    opacity: 0.3;
+    filter: grayscale(1);
     cursor: not-allowed;
 }
 

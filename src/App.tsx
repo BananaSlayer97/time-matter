@@ -58,10 +58,16 @@ function App() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isCatManagerOpen, setIsCatManagerOpen] = useState(false);
   const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
+  const [isArchiveOpen, setIsArchiveOpen] = useState(false);
+  const [isTemplateGalleryOpen, setIsTemplateGalleryOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<TimeEvent | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [detailEvent, setDetailEvent] = useState<TimeEvent | null>(null);
+  const [isFocusMode, setIsFocusMode] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [sortBy, setSortBy] = useState<'countdown' | 'created'>('countdown');
   const [filteredEvents, setFilteredEvents] = useState<TimeEvent[]>([]);
   const [showArchived, setShowArchived] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -72,8 +78,9 @@ function App() {
     setIsFormOpen(true);
   }, []);
 
-  const handleEdit = useCallback((event: TimeEvent) => {
-    setEditingEvent(event);
+  const handleEdit = useCallback((event?: TimeEvent) => {
+    if (event) setEditingEvent(event);
+    else setEditingEvent(null);
     setIsFormOpen(true);
   }, []);
 
@@ -128,8 +135,10 @@ function App() {
       setDetailEvent(null);
     } else if (isFormOpen) {
       handleClose();
+    } else if (isFocusMode) {
+      setIsFocusMode(false);
     }
-  }, [detailEvent, isFormOpen, handleClose]);
+  }, [detailEvent, isFormOpen, handleClose, isFocusMode]);
 
   const handlePin = useCallback((id: string) => {
     togglePin(id);
@@ -219,71 +228,100 @@ function App() {
               </div>
             </div>
             <div className="app-header__right">
-              {events.length > 0 && (
+              {!isFocusMode && (
                 <>
+                  <div className="app-header__hints">
+                    <div className="hint-item">
+                      <span className="hint-key">⌘</span>
+                      <span className="hint-key">K</span>
+                      <span className="hint-text">搜索</span>
+                    </div>
+                  </div>
+
+                  <HeaderToolbar {...settingsProps} />
+
                   <button
-                    className={`app-header__btn ${showArchived ? 'active' : ''}`}
-                    onClick={() => setShowArchived(!showArchived)}
-                    title={showArchived ? '查看进行中' : '查看归档'}
+                    className="app-header__action-btn"
+                    onClick={() => setIsArchiveOpen(true)}
+                    title="查看归档 (G A)"
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="21 8 21 21 3 21 3 8" />
                       <rect x="1" y="3" width="22" height="5" />
                       <line x1="10" y1="12" x2="14" y2="12" />
                     </svg>
+                    <span>归档</span>
                   </button>
-                  {!showArchived && (
-                    <>
-                      <button className="app-header__btn" onClick={() => setIsTemplatesOpen(true)} title="从模板添加">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                          <line x1="3" y1="9" x2="21" y2="9" />
-                          <line x1="9" y1="21" x2="9" y2="9" />
-                        </svg>
-                      </button>
-                      <button className="app-header__add-btn" onClick={handleAdd}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="12" y1="5" x2="12" y2="19" />
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                        <span>新建</span>
-                      </button>
-                    </>
-                  )}
+
+                  <button
+                    className="app-header__action-btn"
+                    onClick={() => setIsTemplateGalleryOpen(true)}
+                    title="模板库 (T)"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </svg>
+                    <span>模板</span>
+                  </button>
+
+                  <button
+                    className="app-header__add-btn"
+                    onClick={() => handleEdit()}
+                    title="新建事件 (N)"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    <span>新建</span>
+                  </button>
                 </>
               )}
-              <HeaderToolbar {...settingsProps} />
+
+              {isFocusMode && (
+                <button
+                  className="app-header__action-btn app-header__action-btn--exit"
+                  onClick={() => setIsFocusMode(false)}
+                  title="退出专注模式 (Esc)"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 6L6 18M6 6l12 12" />
+                  </svg>
+                  <span>退出模式</span>
+                </button>
+              )}
             </div>
           </div>
-
-          {events.length > 0 && !showArchived && (
-            <div className="app-header__hints">
-              <kbd>N</kbd> 新建 · <kbd>/</kbd> 搜索 · <kbd>Esc</kbd> 关闭
-            </div>
-          )}
         </header>
 
-        <main className="app-main">
-          {events.length === 0 ? (
-            <>
-              <TimeProgress />
-              <EmptyState onAdd={handleAdd} onOpenTemplates={() => setIsTemplatesOpen(true)} />
-            </>
-          ) : (
-            <div className="events-container">
-              {!showArchived && (
-                <>
-                  <StatsBar events={events.filter(e => !e.archived)} />
-                  <TimeProgress />
-                </>
-              )}
+        <main className={`app-main ${isFocusMode ? 'app-main--focus' : ''}`}>
+          <TimeProgress
+            isFocusMode={isFocusMode}
+            onToggleFocus={() => setIsFocusMode(!isFocusMode)}
+          />
 
+          {!isFocusMode && (
+            <>
+              <StatsBar
+                events={events}
+                onSearch={setSearchQuery}
+                onCategoryChange={setCategoryFilter}
+                onThemeChange={settingsProps.onSetTheme}
+                currentTheme={settingsProps.theme}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                onSortChange={setSortBy}
+                sortBy={sortBy}
+              />
               <div className="search-toolbar-row">
                 <SearchToolbar
                   events={events}
                   onFilteredEvents={handleFilteredEvents}
                   viewMode={viewMode}
                   onViewModeChange={setViewMode}
+                  sortBy={sortBy}
+                  onSortChange={setSortBy}
                 />
               </div>
 
@@ -381,7 +419,7 @@ function App() {
                   )}
                 </>
               )}
-            </div>
+            </>
           )}
         </main>
 

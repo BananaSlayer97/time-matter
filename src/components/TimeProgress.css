@@ -155,23 +155,96 @@
     margin-top: 2px;
 }
 
-/* ---- Responsive ---- */
-@media (max-width: 1100px) {
-    .time-progress__grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
+/* ---- Focus Mode ---- */
+.time-progress--focus {
+    width: 100%;
+    max-width: 1400px;
 }
 
-@media (max-width: 600px) {
-    .time-progress__grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+.time-progress--focus .time-progress__grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
 
-    .tp-card {
-        padding: 10px 12px;
-    }
+.time-progress--focus .tp-card {
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-    .tp-card__remaining {
-        font-size: 14px;
-    }
+.time-progress--focus .tp-card__remaining {
+    font-size: 32px;
+    margin: 10px 0;
+}
+
+.time-progress--focus .tp-card__label {
+    font-size: 14px;
+}
+
+.time-progress--focus .tp-card__icon {
+    font-size: 24px;
+}
+
+.time-progress__focus-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.time-progress__focus-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.4) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+}
+
+.time-progress__focus-subtitle {
+    font-size: 18px;
+    color: var(--text-tertiary);
+    letter-spacing: 2px;
+}
+
+.time-progress__focus-trigger {
+    margin-left: auto;
+    background: var(--accent-gold-dim);
+    color: var(--accent-gold);
+    border: 1px solid var(--accent-gold-dim);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.time-progress__focus-trigger:hover {
+    background: var(--accent-gold);
+    color: #000;
+    transform: translateY(-1px);
+}
+
+/* Time Unit Coloring (TP Cards) */
+.tp-unit--days {
+    color: #ff9f43;
+}
+
+.tp-unit--hours {
+    color: #26de81;
+}
+
+.tp-unit--minutes {
+    color: #4b7bec;
+}
+
+.tp-unit--seconds {
+    color: #eb4d4b;
+}
+
+.tp-card__separator {
+    opacity: 0.3;
+    margin: 0 2px;
 }
