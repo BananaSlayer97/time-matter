@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { TEMPLATE_PACKS } from '../templates';
 import type { TemplatePack, EventTemplate } from '../templates';
+import { getNextFestivalDate } from '../utils/lunarFestivals';
 import './TemplateGallery.css';
 
 interface TemplateGalleryProps {
@@ -27,7 +28,22 @@ export function TemplateGallery({ isOpen, onClose, onAddEvent }: TemplateGallery
     const handleSelectTemplate = (tpl: EventTemplate) => {
         setSelectedTemplate(tpl);
         setCustomName(tpl.name);
-        setDateValue('');
+        // Auto-fill date for festival templates
+        if (tpl.festivalId) {
+            const autoDate = getNextFestivalDate(tpl.festivalId);
+            if (autoDate) {
+                const d = new Date(autoDate);
+                // Format for datetime-local input: YYYY-MM-DDTHH:mm
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                setDateValue(`${y}-${m}-${day}T00:00`);
+            } else {
+                setDateValue('');
+            }
+        } else {
+            setDateValue('');
+        }
     };
 
     const handleConfirm = () => {
@@ -102,16 +118,27 @@ export function TemplateGallery({ isOpen, onClose, onAddEvent }: TemplateGallery
 
                         <div className="tg-form-group">
                             <label className="tg-label">{selectedTemplate.datePlaceholder}</label>
-                            <input
-                                className="tg-input"
-                                type="datetime-local"
-                                value={dateValue}
-                                onChange={e => setDateValue(e.target.value)}
-                            />
+                            {selectedTemplate.festivalId ? (
+                                <div className="tg-auto-date">
+                                    <span className="tg-auto-date__icon">📅</span>
+                                    <span className="tg-auto-date__text">
+                                        {dateValue ? new Date(dateValue).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }) : '计算中...'}
+                                    </span>
+                                    <span className="tg-auto-date__badge">自动计算</span>
+                                </div>
+                            ) : (
+                                <input
+                                    className="tg-input"
+                                    type="datetime-local"
+                                    value={dateValue}
+                                    onChange={e => setDateValue(e.target.value)}
+                                />
+                            )}
                             <p className="tg-hint">
-                                {selectedTemplate.dateHint === 'past' && '💡 选择一个过去的日期，App 会显示距今已过多久'}
-                                {selectedTemplate.dateHint === 'future' && '💡 选择一个未来的日期，App 会倒计时'}
-                                {selectedTemplate.dateHint === 'recurring' && '💡 选择日期后会自动设为每年循环'}
+                                {selectedTemplate.festivalId && '🎊 日期已根据农历/公历自动计算，每年会自动更新'}
+                                {!selectedTemplate.festivalId && selectedTemplate.dateHint === 'past' && '💡 选择一个过去的日期，App 会显示距今已过多久'}
+                                {!selectedTemplate.festivalId && selectedTemplate.dateHint === 'future' && '💡 选择一个未来的日期，App 会倒计时'}
+                                {!selectedTemplate.festivalId && selectedTemplate.dateHint === 'recurring' && '💡 选择日期后会自动设为每年循环'}
                             </p>
                         </div>
 
@@ -162,10 +189,19 @@ export function TemplateGallery({ isOpen, onClose, onAddEvent }: TemplateGallery
                                 <div className="tg-template-item__info">
                                     <span className="tg-template-item__name">{tpl.name}</span>
                                     <span className="tg-template-item__hint">
-                                        {tpl.dateHint === 'past' && '回溯'}
-                                        {tpl.dateHint === 'future' && '展望'}
-                                        {tpl.dateHint === 'recurring' && '每年循环'}
-                                        {tpl.recurring === 'yearly' && tpl.dateHint !== 'recurring' && ' · 每年循环'}
+                                        {tpl.festivalId ? (() => {
+                                            const d = getNextFestivalDate(tpl.festivalId!);
+                                            if (d) {
+                                                const date = new Date(d);
+                                                const days = Math.ceil((date.getTime() - Date.now()) / 86400_000);
+                                                return days > 0 ? `${days} 天后` : '就是今天！';
+                                            }
+                                            return '自动计算';
+                                        })() : ''}
+                                        {!tpl.festivalId && tpl.dateHint === 'past' && '回溯'}
+                                        {!tpl.festivalId && tpl.dateHint === 'future' && '展望'}
+                                        {!tpl.festivalId && tpl.dateHint === 'recurring' && '每年循环'}
+                                        {!tpl.festivalId && tpl.recurring === 'yearly' && tpl.dateHint !== 'recurring' && ' · 每年循环'}
                                     </span>
                                 </div>
                                 <svg className="tg-template-item__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
