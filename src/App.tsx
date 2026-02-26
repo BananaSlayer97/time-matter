@@ -11,9 +11,9 @@ import { EventCard } from './components/EventCard';
 import { EventForm } from './components/EventForm';
 import { EventDetail } from './components/EventDetail';
 import { EmptyState } from './components/EmptyState';
-import { SettingsMenu } from './components/SettingsMenu';
 import { ToastContainer } from './components/ToastContainer';
 import { SearchToolbar } from './components/SearchToolbar';
+import { HeaderToolbar } from './components/HeaderToolbar';
 import { StatsBar } from './components/StatsBar';
 import { Onboarding } from './components/Onboarding';
 import { CategoryManager } from './components/CategoryManager';
@@ -252,9 +252,10 @@ function App() {
                   )}
                 </>
               )}
-              <SettingsMenu {...settingsProps} />
             </div>
           </div>
+
+          <HeaderToolbar {...settingsProps} />
 
           {events.length > 0 && !showArchived && (
             <div className="app-header__hints">

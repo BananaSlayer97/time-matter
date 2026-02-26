@@ -1,0 +1,207 @@
+/* ---- Header Toolbar (flat row, replaces dropdown) ---- */
+.htoolbar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    flex-wrap: wrap;
+}
+
+.htoolbar__group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    position: relative;
+}
+
+.htoolbar__sep {
+    width: 1px;
+    height: 20px;
+    background: var(--card-border);
+    margin: 0 4px;
+    flex-shrink: 0;
+}
+
+.htoolbar__spacer {
+    flex: 1;
+    min-width: 4px;
+}
+
+.htoolbar__btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.htoolbar__btn:hover:not(:disabled) {
+    background: var(--surface-elevated);
+    border-color: var(--card-border);
+    color: var(--text-primary);
+}
+
+.htoolbar__btn.active {
+    background: var(--accent-gold-dim);
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+.htoolbar__btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.htoolbar__btn--accent {
+    color: var(--accent-gold);
+    border-color: var(--accent-gold-dim);
+    background: var(--accent-gold-dim);
+}
+
+.htoolbar__btn--accent:hover {
+    background: var(--accent-gold) !important;
+    color: #fff !important;
+}
+
+.htoolbar__btn--ok {
+    color: #43e97b;
+}
+
+.htoolbar__btn--ghost {
+    padding: 5px 6px;
+    color: var(--text-tertiary);
+}
+
+.htoolbar__btn--ghost:hover:not(:disabled) {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.htoolbar__btn-icon {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    line-height: 1;
+}
+
+.htoolbar__btn-label {
+    font-size: 11px;
+}
+
+/* Theme mini-popover */
+.htoolbar__theme-wrap {
+    position: relative;
+}
+
+.htoolbar__theme-pop {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    display: flex;
+    gap: 4px;
+    padding: 6px;
+    background: var(--surface-elevated);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    box-shadow: var(--shadow-elevated, 0 10px 30px rgba(0, 0, 0, 0.3));
+    z-index: 300;
+    animation: htPop 0.15s ease;
+}
+
+.htoolbar__theme-opt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 10px;
+    background: none;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.15s ease;
+}
+
+.htoolbar__theme-opt span:last-child {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.htoolbar__theme-opt:hover {
+    background: var(--card-bg);
+}
+
+.htoolbar__theme-opt.active {
+    border-color: var(--accent-gold);
+    background: var(--accent-gold-dim);
+}
+
+/* User avatar */
+.htoolbar__user {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 4px;
+}
+
+.htoolbar__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--accent-gold);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.htoolbar__sync-time {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    color: var(--text-quaternary);
+}
+
+@keyframes htPop {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive: hide labels on small screens */
+@media (max-width: 600px) {
+    .htoolbar__btn-label {
+        display: none;
+    }
+
+    .htoolbar__sep {
+        display: none;
+    }
+
+    .htoolbar {
+        gap: 2px;
+        padding: 4px 6px;
+    }
+}
