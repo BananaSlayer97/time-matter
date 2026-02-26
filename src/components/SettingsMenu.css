@@ -208,6 +208,49 @@
     border-radius: 4px;
 }
 
+/* Sync buttons */
+.settings-menu__sync-row {
+    display: flex;
+    gap: 6px;
+    padding: 4px 0;
+}
+
+.settings-menu__sync-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.settings-menu__sync-btn:hover:not(:disabled) {
+    background: var(--accent-gold-dim);
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+.settings-menu__sync-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.settings-menu__account-sync-time {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    color: var(--text-quaternary);
+    font-weight: 500;
+}
+
 @keyframes dropdownIn {
     from {
         opacity: 0;

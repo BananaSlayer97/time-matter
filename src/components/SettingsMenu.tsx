@@ -12,10 +12,14 @@ interface SettingsMenuProps {
     theme: Theme;
     onSetTheme: (t: Theme) => void;
     onManageCategories: () => void;
-    // Auth props
+    // Auth + Sync
     user: User | null;
     onOpenAuth: () => void;
     onSignOut: () => void;
+    syncing: boolean;
+    lastSync: string | null;
+    onPush: () => void;
+    onPull: () => void;
 }
 
 export function SettingsMenu({
@@ -29,6 +33,10 @@ export function SettingsMenu({
     user,
     onOpenAuth,
     onSignOut,
+    syncing,
+    lastSync,
+    onPush,
+    onPull,
 }: SettingsMenuProps) {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -57,6 +65,16 @@ export function SettingsMenu({
 
     const notifDisabled = notificationPermission === 'granted' || notificationPermission === 'denied';
 
+    const formatLastSync = (iso: string | null) => {
+        if (!iso) return '从未同步';
+        const d = new Date(iso);
+        const hh = String(d.getHours()).padStart(2, '0');
+        const mm = String(d.getMinutes()).padStart(2, '0');
+        const MM = String(d.getMonth() + 1).padStart(2, '0');
+        const DD = String(d.getDate()).padStart(2, '0');
+        return `${MM}-${DD} ${hh}:${mm}`;
+    };
+
     return (
         <div className="settings-menu" ref={menuRef}>
             <button className="settings-menu__trigger" onClick={() => setIsOpen(!isOpen)} aria-label="设置">
@@ -78,9 +96,40 @@ export function SettingsMenu({
                                 </span>
                                 <div className="settings-menu__account-details">
                                     <span className="settings-menu__account-email">{user.email}</span>
-                                    <span className="settings-menu__account-sync">☁️ 已同步</span>
+                                    <span className="settings-menu__account-sync-time">
+                                        上次同步: {formatLastSync(lastSync)}
+                                    </span>
                                 </div>
                             </div>
+
+                            {/* Sync buttons */}
+                            <div className="settings-menu__sync-row">
+                                <button
+                                    className="settings-menu__sync-btn"
+                                    onClick={() => { onPush(); setIsOpen(false); }}
+                                    disabled={syncing}
+                                    title="本地数据覆盖云端"
+                                >
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="17 1 21 5 17 9" />
+                                        <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                                    </svg>
+                                    {syncing ? '...' : '↑ 上传'}
+                                </button>
+                                <button
+                                    className="settings-menu__sync-btn"
+                                    onClick={() => { onPull(); setIsOpen(false); }}
+                                    disabled={syncing}
+                                    title="云端数据覆盖本地"
+                                >
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="7 23 3 19 7 15" />
+                                        <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                                    </svg>
+                                    {syncing ? '...' : '↓ 下载'}
+                                </button>
+                            </div>
+
                             <button className="settings-menu__item settings-menu__item--danger" onClick={() => { onSignOut(); setIsOpen(false); }}>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />

@@ -22,7 +22,7 @@ import { TemplateGallery } from './components/TemplateGallery';
 import { CompactRow } from './components/CompactRow';
 import { AuthModal } from './components/AuthModal';
 import { useAuth } from './hooks/useAuth';
-import { useSupabaseSync } from './hooks/useSupabaseSync';
+import { useCloudSync } from './hooks/useSupabaseSync';
 import { exportToICal } from './utils/ical';
 import type { TimeEvent } from './types';
 import './App.css';
@@ -53,7 +53,7 @@ function App() {
   const { requestPermission, permissionStatus } = useNotifications(events);
   const { theme, setTheme: setAppTheme } = useTheme();
   const { user, signInWithEmail, signUpWithEmail, signInWithGithub, signOut } = useAuth();
-  useSupabaseSync(user, events, replaceAllEvents);
+  const { syncing, lastSync, pushToCloud, pullFromCloud } = useCloudSync(user, events, replaceAllEvents);
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isCatManagerOpen, setIsCatManagerOpen] = useState(false);
@@ -183,6 +183,18 @@ function App() {
     user,
     onOpenAuth: () => setIsAuthOpen(true),
     onSignOut: signOut,
+    syncing,
+    lastSync,
+    onPush: async () => {
+      const ok = await pushToCloud();
+      if (ok) showSuccess('已上传到云端 ☁️');
+      else showError('上传失败');
+    },
+    onPull: async () => {
+      const ok = await pullFromCloud();
+      if (ok) showSuccess('已从云端下载 📥');
+      else showError('下载失败');
+    },
   };
 
   return (

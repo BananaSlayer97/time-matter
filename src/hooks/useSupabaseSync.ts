@@ -1,153 +1,107 @@
-import { useEffect, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import type { User } from '@supabase/supabase-js';
 import type { TimeEvent } from '../types';
 
+const LAST_SYNC_KEY = 'time-matter-last-sync';
+
 /**
- * Sync local events ↔ Supabase.
- * Strategy: on login, merge local + cloud. On changes, push to cloud.
+ * 手动同步 — 简单明了：
+ * ↑ pushToCloud: 本地覆盖云端
+ * ↓ pullFromCloud: 云端覆盖本地
  */
-export function useSupabaseSync(
+export function useCloudSync(
     user: User | null,
     events: TimeEvent[],
     replaceAllEvents: (events: TimeEvent[]) => void,
 ) {
-    const hasSynced = useRef(false);
-    const isSyncing = useRef(false);
+    const [syncing, setSyncing] = useState(false);
+    const [lastSync, setLastSync] = useState<string | null>(
+        () => localStorage.getItem(LAST_SYNC_KEY)
+    );
 
-    // Convert local TimeEvent → Supabase row
-    const toRow = useCallback((e: TimeEvent, userId: string) => ({
-        id: e.id.includes('-') && e.id.length > 20 ? e.id : undefined, // only pass valid UUIDs
-        user_id: userId,
-        name: e.name,
-        target_date: e.targetDate,
-        category: e.category,
-        color: e.color,
-        created_at: e.createdAt,
-        sort_order: e.order,
-        recurring: e.recurring || 'none',
-        note: e.note || null,
-        pinned: e.pinned || false,
-        archived: e.archived || false,
-        reminder_minutes: e.reminderMinutes || 0,
-    }), []);
+    // ↑ 本地 → 云端（覆盖）
+    const pushToCloud = useCallback(async () => {
+        if (!user || syncing) return;
+        setSyncing(true);
+        try {
+            // 1. 清空云端该用户的所有数据
+            await supabase.from('events').delete().eq('user_id', user.id);
 
-    // Convert Supabase row → local TimeEvent
-    const toEvent = useCallback((row: Record<string, unknown>): TimeEvent => ({
-        id: row.id as string,
-        name: row.name as string,
-        targetDate: row.target_date as string,
-        category: row.category as string,
-        color: row.color as string,
-        createdAt: row.created_at as string,
-        order: row.sort_order as number,
-        recurring: (row.recurring as 'none' | 'yearly') || 'none',
-        note: (row.note as string) || undefined,
-        pinned: (row.pinned as boolean) || false,
-        archived: (row.archived as boolean) || false,
-        reminderMinutes: (row.reminder_minutes as number) || 0,
-    }), []);
-
-    // Initial sync: pull cloud data and merge with local
-    useEffect(() => {
-        if (!user || hasSynced.current) return;
-
-        const syncInit = async () => {
-            isSyncing.current = true;
-            try {
-                // Fetch cloud events
-                const { data: cloudRows, error } = await supabase
-                    .from('events')
-                    .select('*')
-                    .eq('user_id', user.id)
-                    .order('sort_order', { ascending: true });
-
-                if (error) {
-                    console.error('Sync fetch error:', error);
-                    return;
-                }
-
-                const cloudEvents = (cloudRows || []).map(toEvent);
-
-                if (cloudEvents.length === 0 && events.length > 0) {
-                    // First time: push local events to cloud
-                    const rows = events.map(e => {
-                        const row = toRow(e, user.id);
-                        // Remove id if not a valid UUID (local IDs are timestamp-based)
-                        if (!row.id) delete row.id;
-                        return row;
-                    });
-
-                    const { data: inserted, error: insertError } = await supabase
-                        .from('events')
-                        .insert(rows)
-                        .select();
-
-                    if (insertError) {
-                        console.error('Initial push error:', insertError);
-                    } else if (inserted) {
-                        // Replace local events with cloud-assigned UUIDs
-                        replaceAllEvents(inserted.map(toEvent));
-                    }
-                } else if (cloudEvents.length > 0) {
-                    // Use cloud data as source of truth
-                    replaceAllEvents(cloudEvents);
-                }
-
-                hasSynced.current = true;
-            } finally {
-                isSyncing.current = false;
-            }
-        };
-
-        syncInit();
-    }, [user, events, replaceAllEvents, toEvent, toRow]);
-
-    // Push changes to cloud whenever events change (after initial sync)
-    useEffect(() => {
-        if (!user || !hasSynced.current || isSyncing.current) return;
-
-        const pushToCloud = async () => {
-            isSyncing.current = true;
-            try {
-                // Upsert all current events
-                const rows = events.map(e => ({
-                    ...toRow(e, user.id),
-                    id: e.id, // cloud events already have UUID ids
+            // 2. 把本地数据全量写入
+            if (events.length > 0) {
+                const rows = events.map((e, i) => ({
+                    user_id: user.id,
+                    name: e.name,
+                    target_date: e.targetDate,
+                    category: e.category,
+                    color: e.color,
+                    created_at: e.createdAt,
+                    sort_order: i,
+                    recurring: e.recurring || 'none',
+                    note: e.note || null,
+                    pinned: e.pinned || false,
+                    archived: e.archived || false,
+                    reminder_minutes: e.reminderMinutes || 0,
                 }));
 
-                // Delete events from cloud that are not in local
-                const localIds = events.map(e => e.id);
-                const { data: cloudRows } = await supabase
-                    .from('events')
-                    .select('id')
-                    .eq('user_id', user.id);
-
-                if (cloudRows) {
-                    const cloudIds = cloudRows.map((r: { id: string }) => r.id);
-                    const toDelete = cloudIds.filter(id => !localIds.includes(id));
-                    if (toDelete.length > 0) {
-                        await supabase.from('events').delete().in('id', toDelete);
-                    }
-                }
-
-                if (rows.length > 0) {
-                    await supabase.from('events').upsert(rows, { onConflict: 'id' });
-                }
-            } finally {
-                isSyncing.current = false;
+                const { error } = await supabase.from('events').insert(rows);
+                if (error) throw error;
             }
-        };
 
-        // Debounce pushes
-        const timer = setTimeout(pushToCloud, 1500);
-        return () => clearTimeout(timer);
-    }, [user, events, toRow]);
-
-    // Reset sync state on logout
-    useEffect(() => {
-        if (!user) {
-            hasSynced.current = false;
+            const now = new Date().toISOString();
+            localStorage.setItem(LAST_SYNC_KEY, now);
+            setLastSync(now);
+            return true;
+        } catch (err) {
+            console.error('[Sync] Push error:', err);
+            return false;
+        } finally {
+            setSyncing(false);
         }
-    }, [user]);
+    }, [user, events, syncing]);
+
+    // ↓ 云端 → 本地（覆盖）
+    const pullFromCloud = useCallback(async () => {
+        if (!user || syncing) return;
+        setSyncing(true);
+        try {
+            const { data, error } = await supabase
+                .from('events')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('sort_order', { ascending: true });
+
+            if (error) throw error;
+
+            const cloudEvents: TimeEvent[] = (data || []).map((row: Record<string, unknown>) => ({
+                id: row.id as string,
+                name: row.name as string,
+                targetDate: row.target_date as string,
+                category: row.category as string,
+                color: row.color as string,
+                createdAt: row.created_at as string,
+                order: row.sort_order as number,
+                recurring: (row.recurring as 'none' | 'yearly') || 'none',
+                note: (row.note as string) || undefined,
+                pinned: (row.pinned as boolean) || false,
+                archived: (row.archived as boolean) || false,
+                reminderMinutes: (row.reminder_minutes as number) || 0,
+            }));
+
+            replaceAllEvents(cloudEvents);
+
+            const now = new Date().toISOString();
+            localStorage.setItem(LAST_SYNC_KEY, now);
+            setLastSync(now);
+            return true;
+        } catch (err) {
+            console.error('[Sync] Pull error:', err);
+            return false;
+        } finally {
+            setSyncing(false);
+        }
+    }, [user, replaceAllEvents, syncing]);
+
+    return { syncing, lastSync, pushToCloud, pullFromCloud };
 }
