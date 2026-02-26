@@ -32,19 +32,18 @@ type ViewMode = 'grid' | 'list' | 'compact';
 const MemoizedEventCard = memo(EventCard);
 
 function App() {
-  const {
-    events,
-    addEvent,
-    updateEvent,
-    deleteEvent,
-    replaceAllEvents,
-    togglePin,
-    toggleArchive,
-    duplicateEvent,
-    customCategories,
-    addCustomCategory,
-    removeCustomCategory
-  } = useStore();
+  const events = useStore(state => state.events);
+  const customCategories = useStore(state => state.customCategories);
+
+  const addEvent = useStore(state => state.addEvent);
+  const updateEvent = useStore(state => state.updateEvent);
+  const deleteEvent = useStore(state => state.deleteEvent);
+  const replaceAllEvents = useStore(state => state.replaceAllEvents);
+  const togglePin = useStore(state => state.togglePin);
+  const toggleArchive = useStore(state => state.toggleArchive);
+  const duplicateEvent = useStore(state => state.duplicateEvent);
+  const addCustomCategory = useStore(state => state.addCustomCategory);
+  const removeCustomCategory = useStore(state => state.removeCustomCategory);
 
   const { toasts, removeToast, showSuccess, showError, showUndo } = useToast();
   const toastCallbacks = useMemo(() => ({ showSuccess, showError }), [showSuccess, showError]);

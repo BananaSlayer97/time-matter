@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useCountdown } from '../hooks/useCountdown';
 import { CATEGORIES } from '../types';
 import type { TimeEvent } from '../types';
@@ -59,36 +60,50 @@ function getYearlyProgress(targetDate: string): number {
 
 export function EventCard({ event, onEdit, onDelete, onDuplicate, onPin, onArchive, onExportCal, onClick, index }: EventCardProps) {
     const diff = useCountdown(event.targetDate);
-    const category = (CATEGORIES as Record<string, any>)[event.category] || CATEGORIES.custom;
+    const category = useMemo(() => (CATEGORIES as Record<string, any>)[event.category] || CATEGORIES.custom, [event.category]);
 
-    const targetDateObj = new Date(event.targetDate);
-    const formattedDate = targetDateObj.toLocaleDateString('zh-CN', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-    });
-    const formattedTime = targetDateObj.toLocaleTimeString('zh-CN', {
-        hour: '2-digit',
-        minute: '2-digit',
-    });
+    const { formattedDate, formattedTime } = useMemo(() => {
+        const targetDateObj = new Date(event.targetDate);
+        return {
+            formattedDate: targetDateObj.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            }),
+            formattedTime: targetDateObj.toLocaleTimeString('zh-CN', {
+                hour: '2-digit',
+                minute: '2-digit',
+            })
+        };
+    }, [event.targetDate]);
 
     // Natural language description
-    const naturalTime = describeTime(diff.days, diff.isPast);
+    // This technically changes once a day, but since diff.days updates, 
+    // it's safest to keep it simple or memoize on diff.days
+    const naturalTime = useMemo(() => describeTime(diff.days, diff.isPast), [diff.days, diff.isPast]);
 
-    // Creation date
-    const createdDate = new Date(event.createdAt);
-    const createdAgo = Math.floor((Date.now() - createdDate.getTime()) / 86400000);
-    const createdStr = createdAgo === 0 ? '今天创建' : createdAgo < 30
-        ? `${createdAgo} 天前创建`
-        : `${Math.floor(createdAgo / 30)} 个月前创建`;
+    // Creation date info - changes once a day
+    const createdStr = useMemo(() => {
+        const createdDate = new Date(event.createdAt);
+        const createdAgo = Math.floor((Date.now() - createdDate.getTime()) / 86400000);
+        return createdAgo === 0 ? '今天创建' : createdAgo < 30
+            ? `${createdAgo} 天前创建`
+            : `${Math.floor(createdAgo / 30)} 个月前创建`;
+    }, [event.createdAt]);
 
-    // Total day span from creation to target
-    const totalSpanDays = Math.abs(Math.floor(
-        (targetDateObj.getTime() - createdDate.getTime()) / 86400000
-    ));
+    // Yearly progress - changes very slowly
+    const yearlyProgress = useMemo(() =>
+        event.recurring === 'yearly' ? getYearlyProgress(event.targetDate) : null,
+        [event.recurring, event.targetDate]);
 
-    // Yearly progress for recurring events
-    const yearlyProgress = event.recurring === 'yearly' ? getYearlyProgress(event.targetDate) : null;
+    // Total day span
+    const totalSpanDays = useMemo(() => {
+        const targetDateObj = new Date(event.targetDate);
+        const createdDate = new Date(event.createdAt);
+        return Math.abs(Math.floor(
+            (targetDateObj.getTime() - createdDate.getTime()) / 86400000
+        ));
+    }, [event.targetDate, event.createdAt]);
 
     return (
         <div
@@ -214,7 +229,7 @@ export function EventCard({ event, onEdit, onDelete, onDuplicate, onPin, onArchi
                     )}
                 </div>
                 <div className="event-card__info-tags">
-                    <span className="event-card__info-tag" title={`创建于 ${createdDate.toLocaleDateString('zh-CN')}`}>
+                    <span className="event-card__info-tag" title={`创建于 ${new Date(event.createdAt).toLocaleDateString('zh-CN')}`}>
                         {createdStr}
                     </span>
                     {totalSpanDays > 0 && (

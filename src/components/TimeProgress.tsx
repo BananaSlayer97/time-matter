@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
+import { useGlobalTick } from '../context/GlobalTickContext';
 import './TimeProgress.css';
 
 interface TimeSlot {
@@ -20,10 +21,11 @@ function getSlotColor(label: string): string {
 
 function getTimeSlots(now: Date): TimeSlot[] {
     const pad = (n: number) => String(n).padStart(2, '0');
+    const timestamp = now.getTime();
 
     // ---- 本小时 ----
     const hourStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), 0, 0, 0);
-    const hourElapsed = now.getTime() - hourStart.getTime();
+    const hourElapsed = timestamp - hourStart.getTime();
     const hourLeft = 3600_000 - hourElapsed;
     const hourMins = Math.floor(hourLeft / 60_000);
     const hourSecs = Math.floor((hourLeft % 60_000) / 1000);
@@ -32,7 +34,7 @@ function getTimeSlots(now: Date): TimeSlot[] {
 
     // ---- 今天 ----
     const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-    const dayElapsed = now.getTime() - dayStart.getTime();
+    const dayElapsed = timestamp - dayStart.getTime();
     const dayLeft = 86400_000 - dayElapsed;
     const dayHrs = Math.floor(dayLeft / 3600_000);
     const dayMins = Math.floor((dayLeft % 3600_000) / 60_000);
@@ -44,7 +46,7 @@ function getTimeSlots(now: Date): TimeSlot[] {
     const wd = now.getDay() === 0 ? 6 : now.getDay() - 1;
     const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - wd, 0, 0, 0, 0);
     const weekTotal = 7 * 86400_000;
-    const weekElapsed = now.getTime() - weekStart.getTime();
+    const weekElapsed = timestamp - weekStart.getTime();
     const weekLeft = weekTotal - weekElapsed;
     const wD = Math.floor(weekLeft / 86400_000);
     const wH = Math.floor((weekLeft % 86400_000) / 3600_000);
@@ -55,8 +57,8 @@ function getTimeSlots(now: Date): TimeSlot[] {
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
     const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1, 0, 0, 0, 0);
     const monthTotal = monthEnd.getTime() - monthStart.getTime();
-    const monthElapsed = now.getTime() - monthStart.getTime();
-    const monthLeft = monthEnd.getTime() - now.getTime();
+    const monthElapsed = timestamp - monthStart.getTime();
+    const monthLeft = monthEnd.getTime() - timestamp;
     const mD = Math.floor(monthLeft / 86400_000);
     const monthPercent = (monthElapsed / monthTotal) * 100;
     const totalDaysInMonth = Math.round(monthTotal / 86400_000);
@@ -66,8 +68,8 @@ function getTimeSlots(now: Date): TimeSlot[] {
     const qStart = new Date(now.getFullYear(), quarter * 3, 1, 0, 0, 0, 0);
     const qEnd = new Date(now.getFullYear(), quarter * 3 + 3, 1, 0, 0, 0, 0);
     const qTotal = qEnd.getTime() - qStart.getTime();
-    const qElapsed = now.getTime() - qStart.getTime();
-    const qLeft = qEnd.getTime() - now.getTime();
+    const qElapsed = timestamp - qStart.getTime();
+    const qLeft = qEnd.getTime() - timestamp;
     const qD = Math.floor(qLeft / 86400_000);
     const qPercent = (qElapsed / qTotal) * 100;
 
@@ -75,8 +77,8 @@ function getTimeSlots(now: Date): TimeSlot[] {
     const yearStart = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
     const yearEnd = new Date(now.getFullYear() + 1, 0, 1, 0, 0, 0, 0);
     const yearTotal = yearEnd.getTime() - yearStart.getTime();
-    const yearElapsed = now.getTime() - yearStart.getTime();
-    const yearLeft = yearEnd.getTime() - now.getTime();
+    const yearElapsed = timestamp - yearStart.getTime();
+    const yearLeft = yearEnd.getTime() - timestamp;
     const yD = Math.floor(yearLeft / 86400_000);
     const yearPercent = (yearElapsed / yearTotal) * 100;
     const dayOfYear = Math.floor(yearElapsed / 86400_000) + 1;
@@ -136,13 +138,10 @@ interface TimeProgressProps {
 }
 
 export function TimeProgress({ isFocusMode, onToggleFocus }: TimeProgressProps) {
-    const [slots, setSlots] = useState<TimeSlot[]>(() => getTimeSlots(new Date()));
+    const tick = useGlobalTick();
     const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem(STORAGE_KEY) === '1');
 
-    useEffect(() => {
-        const timer = setInterval(() => setSlots(getTimeSlots(new Date())), 1000);
-        return () => clearInterval(timer);
-    }, []);
+    const slots = useMemo(() => getTimeSlots(new Date(tick)), [tick]);
 
     const toggleCollapse = () => {
         setIsCollapsed(prev => {
