@@ -1,11 +1,12 @@
-const CACHE_NAME = 'time-matter-v1';
+const CACHE_VERSION = '2';
+const CACHE_NAME = `time-matter-v${CACHE_VERSION}`;
 const STATIC_ASSETS = [
     '/',
     '/index.html',
     '/manifest.json',
 ];
 
-// Install — cache static assets
+// Install — cache static assets + force activate immediately
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
@@ -15,7 +16,7 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
-// Activate — clean old caches
+// Activate — clean ALL old caches
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((keys) =>
@@ -31,14 +32,27 @@ self.addEventListener('activate', (event) => {
 
 // Fetch — network first, cache fallback
 self.addEventListener('fetch', (event) => {
-    // Skip non-GET, chrome-extension, etc.
     if (event.request.method !== 'GET') return;
     if (!event.request.url.startsWith('http')) return;
 
+    // For navigation requests (HTML pages), always try network first
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request)
+                .then((response) => {
+                    const clone = response.clone();
+                    caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+                    return response;
+                })
+                .catch(() => caches.match(event.request))
+        );
+        return;
+    }
+
+    // For other assets: network first with cache fallback
     event.respondWith(
         fetch(event.request)
             .then((response) => {
-                // Cache successful responses
                 if (response.ok) {
                     const clone = response.clone();
                     caches.open(CACHE_NAME).then((cache) => {
@@ -65,4 +79,11 @@ self.addEventListener('notificationclick', (event) => {
             }
         })
     );
+});
+
+// Listen for messages to skip waiting
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
 });

@@ -18,6 +18,7 @@ import { StatsBar } from './components/StatsBar';
 import { Onboarding } from './components/Onboarding';
 import { CategoryManager } from './components/CategoryManager';
 import { TimeProgress } from './components/TimeProgress';
+import { TemplateGallery } from './components/TemplateGallery';
 import { exportToICal } from './utils/ical';
 import type { TimeEvent } from './types';
 import './App.css';
@@ -50,6 +51,7 @@ function App() {
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isCatManagerOpen, setIsCatManagerOpen] = useState(false);
+  const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<TimeEvent | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [detailEvent, setDetailEvent] = useState<TimeEvent | null>(null);
@@ -234,7 +236,7 @@ function App() {
           {events.length === 0 ? (
             <>
               <TimeProgress />
-              <EmptyState onAdd={handleAdd} />
+              <EmptyState onAdd={handleAdd} onOpenTemplates={() => setIsTemplatesOpen(true)} />
             </>
           ) : (
             <div className="events-container">
@@ -370,6 +372,15 @@ function App() {
           customCategories={customCategories}
           onAdd={addCustomCategory}
           onRemove={removeCustomCategory}
+        />
+
+        <TemplateGallery
+          isOpen={isTemplatesOpen}
+          onClose={() => setIsTemplatesOpen(false)}
+          onAddEvent={(e) => {
+            addEvent(e as any);
+            showSuccess(`已添加「${e.name}」`);
+          }}
         />
 
         {detailEvent && (

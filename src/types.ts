@@ -74,8 +74,8 @@ export const BUILTIN_CATEGORIES: Record<BuiltinCategory, CategoryInfo> = {
   },
 };
 
-// Backwards-compatible alias
-export const CATEGORIES = BUILTIN_CATEGORIES;
+// Backwards-compatible alias (widened to string keys for custom category lookups)
+export const CATEGORIES: Record<string, CategoryInfo> = BUILTIN_CATEGORIES;
 
 // Reminder presets (in minutes)
 export const REMINDER_PRESETS = [

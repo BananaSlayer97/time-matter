@@ -1,0 +1,326 @@
+/* ========================================
+   Template Gallery
+   ======================================== */
+
+.tg-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: tgFadeIn 0.25s ease;
+}
+
+.tg-modal {
+    background: var(--surface-card);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+    animation: tgSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tg-modal__header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tg-modal__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    flex: 1;
+}
+
+.tg-back,
+.tg-close {
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.tg-back:hover,
+.tg-close:hover {
+    background: var(--card-border);
+    color: var(--text-primary);
+}
+
+.tg-subtitle {
+    padding: 16px 24px 0;
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-tertiary);
+}
+
+/* ---- Pack Grid ---- */
+.tg-pack-grid {
+    padding: 16px 24px 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    overflow-y: auto;
+}
+
+.tg-pack-card {
+    position: relative;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 20px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    text-align: center;
+}
+
+.tg-pack-card__accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+}
+
+.tg-pack-card:hover {
+    border-color: var(--accent-gold-dim);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.tg-pack-card__icon {
+    font-size: 32px;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.tg-pack-card__name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.tg-pack-card__desc {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    line-height: 1.4;
+}
+
+.tg-pack-card__count {
+    font-size: 10px;
+    color: var(--text-quaternary);
+    background: var(--card-border);
+    padding: 2px 8px;
+    border-radius: 100px;
+    margin-top: 4px;
+}
+
+/* ---- Template List ---- */
+.tg-template-list {
+    padding: 12px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tg-template-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: var(--card-bg);
+    border: 1px solid transparent;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+}
+
+.tg-template-item:hover {
+    background: var(--surface-card);
+    border-color: var(--card-border);
+}
+
+.tg-template-item__icon {
+    font-size: 24px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.tg-template-item__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tg-template-item__name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.tg-template-item__hint {
+    font-size: 11px;
+    color: var(--text-quaternary);
+}
+
+.tg-template-item__arrow {
+    color: var(--text-quaternary);
+    flex-shrink: 0;
+}
+
+/* ---- Date Step ---- */
+.tg-date-step {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.tg-date-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--card-bg);
+    border-radius: 14px;
+    border: 1px solid var(--card-border);
+}
+
+.tg-date-preview__icon {
+    font-size: 28px;
+}
+
+.tg-date-preview__name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.tg-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tg-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tg-input {
+    padding: 12px 14px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    font-size: 14px;
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.tg-input:focus {
+    border-color: var(--accent-gold);
+}
+
+.tg-hint {
+    font-size: 12px;
+    color: var(--text-quaternary);
+    margin: 0;
+}
+
+.tg-note {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin: 0;
+    padding: 12px 14px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    font-style: italic;
+}
+
+.tg-confirm-btn {
+    padding: 14px;
+    background: var(--accent-gold);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 16px var(--accent-glow);
+    transition: all 0.25s ease;
+}
+
+.tg-confirm-btn:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.tg-confirm-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* ---- Animations ---- */
+@keyframes tgFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes tgSlideUp {
+    from {
+        transform: translateY(24px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 480px) {
+    .tg-pack-grid {
+        grid-template-columns: 1fr;
+    }
+}

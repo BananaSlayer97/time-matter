@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import type { TimeEvent, EventCategory } from '../types';
+import type { TimeEvent, EventCategory, CategoryInfo } from '../types';
 import { CATEGORIES } from '../types';
 import './SearchToolbar.css';
 
@@ -62,7 +62,7 @@ export function SearchToolbar({ events, onFilteredEvents, viewMode, onViewModeCh
         return result;
     }, [events, query, activeCategory, sortBy, onFilteredEvents]);
 
-    const categoryEntries = Object.entries(CATEGORIES) as [EventCategory, typeof CATEGORIES[EventCategory]][];
+    const categoryEntries = Object.entries(CATEGORIES) as [string, CategoryInfo][];
 
     return (
         <div className="search-toolbar">

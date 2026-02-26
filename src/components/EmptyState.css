@@ -46,11 +46,18 @@
     margin: 0 0 32px;
 }
 
+.empty-state__actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 .empty-state__btn {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 16px 32px;
+    padding: 16px 28px;
     background: var(--accent-gold);
     color: #1a1a2e;
     border: none;
@@ -60,6 +67,17 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.empty-state__btn--template {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--card-border);
+}
+
+.empty-state__btn--template:hover {
+    border-color: var(--accent-gold-dim);
+    background: var(--surface-card);
 }
 
 .empty-state__btn:hover {
