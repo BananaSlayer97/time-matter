@@ -17,6 +17,7 @@ import { SearchToolbar } from './components/SearchToolbar';
 import { StatsBar } from './components/StatsBar';
 import { Onboarding } from './components/Onboarding';
 import { CategoryManager } from './components/CategoryManager';
+import { TimeProgress } from './components/TimeProgress';
 import { exportToICal } from './utils/ical';
 import type { TimeEvent } from './types';
 import './App.css';
@@ -231,10 +232,18 @@ function App() {
 
         <main className="app-main">
           {events.length === 0 ? (
-            <EmptyState onAdd={handleAdd} />
+            <>
+              <TimeProgress />
+              <EmptyState onAdd={handleAdd} />
+            </>
           ) : (
             <div className="events-container">
-              {!showArchived && <StatsBar events={events.filter(e => !e.archived)} />}
+              {!showArchived && (
+                <>
+                  <TimeProgress />
+                  <StatsBar events={events.filter(e => !e.archived)} />
+                </>
+              )}
 
               <div className="search-toolbar-row">
                 <SearchToolbar

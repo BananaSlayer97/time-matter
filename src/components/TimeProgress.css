@@ -1,0 +1,170 @@
+/* ========================================
+   Time Progress Module
+   ======================================== */
+
+.time-progress {
+    margin-bottom: 8px;
+}
+
+/* ---- Collapsible Header ---- */
+.time-progress__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 4px 4px 4px 4px;
+    margin-bottom: 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    transition: opacity 0.2s ease;
+}
+
+.time-progress__header:hover {
+    opacity: 0.8;
+}
+
+.time-progress__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.time-progress__chevron {
+    color: var(--text-quaternary);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.time-progress__chevron.collapsed {
+    transform: rotate(-90deg);
+}
+
+/* ---- Collapsible Body ---- */
+.time-progress__body {
+    display: grid;
+    grid-template-rows: 1fr;
+    overflow: hidden;
+    transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.3s ease;
+    opacity: 1;
+}
+
+.time-progress__body--collapsed {
+    grid-template-rows: 0fr;
+    opacity: 0;
+}
+
+.time-progress__grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* ---- Individual Card ---- */
+.tp-card {
+    background: var(--surface-card);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.tp-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.03) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.tp-card:hover {
+    border-color: var(--accent-gold-dim);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.tp-card__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tp-card__icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.tp-card__label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+}
+
+.tp-card__remaining {
+    font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+}
+
+/* Progress Bar */
+.tp-card__bar-track {
+    height: 4px;
+    border-radius: 4px;
+    background: var(--card-border);
+    overflow: hidden;
+}
+
+.tp-card__bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s linear;
+}
+
+.tp-card__percent {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1200px) {
+    .time-progress__grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .time-progress__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .tp-card__remaining {
+        font-size: 17px;
+    }
+}
+
+@media (max-width: 380px) {
+    .time-progress__grid {
+        grid-template-columns: 1fr;
+    }
+}
