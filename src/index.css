@@ -1,69 +1,138 @@
 /* ========================================
    Time Matter — Global Styles
-   Cinematic Dark Elegance Theme
+   Multi-theme System
    ======================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
 
-:root {
-  /* Backgrounds */
-  --bg-primary: #0a0a14;
-  --bg-secondary: #0f0f1e;
-  --surface-elevated: rgba(18, 18, 35, 0.95);
+/* ========================================
+   Theme: Midnight (深邃暗色)
+   柔和的深蓝黑 – 对比强烈但不刺眼
+   ======================================== */
+:root,
+[data-theme="midnight"] {
+  --bg-primary: #10101e;
+  --bg-secondary: #15152a;
+  --surface-card: rgba(22, 22, 42, 0.95);
+  --surface-elevated: rgba(26, 26, 48, 0.98);
 
-  /* Card */
-  --card-bg: rgba(16, 16, 30, 0.6);
-  --card-border: rgba(255, 255, 255, 0.04);
+  --card-bg: rgba(20, 20, 38, 0.7);
+  --card-border: rgba(255, 255, 255, 0.07);
 
-  /* Text */
-  --text-primary: rgba(255, 255, 255, 0.92);
-  --text-secondary: rgba(255, 255, 255, 0.65);
-  --text-tertiary: rgba(255, 255, 255, 0.4);
-  --text-quaternary: rgba(255, 255, 255, 0.2);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.45);
+  --text-quaternary: rgba(255, 255, 255, 0.25);
 
-  /* Accents */
   --accent-gold: #D4AF37;
   --accent-gold-dim: rgba(212, 175, 55, 0.5);
-  --accent-glow: rgba(212, 175, 55, 0.4);
+  --accent-glow: rgba(212, 175, 55, 0.35);
+  --accent-gold-bright: #f0c040;
   --accent-ice: #82CAFF;
   --accent-ice-glow: rgba(130, 202, 255, 0.3);
 
-  /* Shadows */
-  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.2);
-  --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.25);
+  --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.35);
 
-  /* Sizing */
   --max-width: 900px;
   --header-height: 72px;
-
-  /* Transition */
   --theme-transition: background 0.4s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  --theme-mode: dark;
 }
 
-/* ---- Light Theme ---- */
-[data-theme="light"] {
-  --bg-primary: #faf9f6;
-  --bg-secondary: #f2f1ec;
+/* ========================================
+   Theme: Twilight (暮光 – 柔和暗色)
+   灰蓝调 – 护眼、低疲劳
+   ======================================== */
+[data-theme="twilight"] {
+  --bg-primary: #1a1d28;
+  --bg-secondary: #20242f;
+  --surface-card: rgba(30, 34, 46, 0.95);
+  --surface-elevated: rgba(34, 38, 52, 0.98);
+
+  --card-bg: rgba(28, 32, 44, 0.75);
+  --card-border: rgba(255, 255, 255, 0.08);
+
+  --text-primary: rgba(230, 234, 245, 0.96);
+  --text-secondary: rgba(200, 210, 230, 0.72);
+  --text-tertiary: rgba(170, 180, 200, 0.52);
+  --text-quaternary: rgba(140, 150, 170, 0.35);
+
+  --accent-gold: #c9a84c;
+  --accent-gold-dim: rgba(201, 168, 76, 0.4);
+  --accent-glow: rgba(201, 168, 76, 0.3);
+  --accent-gold-bright: #e0be5a;
+  --accent-ice: #7bb8e0;
+  --accent-ice-glow: rgba(123, 184, 224, 0.25);
+
+  --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.2);
+  --shadow-elevated: 0 8px 28px rgba(0, 0, 0, 0.28);
+  --theme-mode: dark;
+}
+
+/* ========================================
+   Theme: Dawn (晨曦 – 暖调亮色)
+   米白调 – 柔和温暖、不刺眼
+   ======================================== */
+[data-theme="dawn"] {
+  --bg-primary: #f5f3ef;
+  --bg-secondary: #edeae4;
+  --surface-card: rgba(255, 255, 255, 0.92);
   --surface-elevated: rgba(255, 255, 255, 0.98);
 
-  --card-bg: rgba(255, 255, 255, 0.85);
-  --card-border: rgba(0, 0, 0, 0.08);
+  --card-bg: rgba(255, 255, 255, 0.82);
+  --card-border: rgba(0, 0, 0, 0.09);
 
-  --text-primary: #1a1a2e;
-  --text-secondary: rgba(26, 26, 46, 0.65);
-  --text-tertiary: rgba(26, 26, 46, 0.42);
-  --text-quaternary: rgba(26, 26, 46, 0.22);
+  --text-primary: #1c1c28;
+  --text-secondary: rgba(28, 28, 40, 0.68);
+  --text-tertiary: rgba(28, 28, 40, 0.45);
+  --text-quaternary: rgba(28, 28, 40, 0.28);
 
-  --accent-gold: #a07c1c;
-  --accent-gold-dim: rgba(160, 124, 28, 0.35);
-  --accent-glow: rgba(160, 124, 28, 0.2);
-  --accent-ice: #2d7ab8;
-  --accent-ice-glow: rgba(45, 122, 184, 0.18);
+  --accent-gold: #9b7518;
+  --accent-gold-dim: rgba(155, 117, 24, 0.3);
+  --accent-glow: rgba(155, 117, 24, 0.18);
+  --accent-gold-bright: #c0941e;
+  --accent-ice: #2d73a8;
+  --accent-ice-glow: rgba(45, 115, 168, 0.15);
 
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
   --shadow-elevated: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --theme-mode: light;
 }
 
+/* ========================================
+   Theme: Frost (霜白 – 清爽亮色)
+   冷灰调 – 清爽干净、高对比
+   ======================================== */
+[data-theme="frost"] {
+  --bg-primary: #f0f2f5;
+  --bg-secondary: #e8eaef;
+  --surface-card: rgba(255, 255, 255, 0.95);
+  --surface-elevated: rgba(255, 255, 255, 0.99);
+
+  --card-bg: rgba(255, 255, 255, 0.88);
+  --card-border: rgba(0, 0, 0, 0.1);
+
+  --text-primary: #141418;
+  --text-secondary: rgba(20, 20, 24, 0.7);
+  --text-tertiary: rgba(20, 20, 24, 0.48);
+  --text-quaternary: rgba(20, 20, 24, 0.3);
+
+  --accent-gold: #6366f1;
+  --accent-gold-dim: rgba(99, 102, 241, 0.25);
+  --accent-glow: rgba(99, 102, 241, 0.18);
+  --accent-gold-bright: #818cf8;
+  --accent-ice: #0284c7;
+  --accent-ice-glow: rgba(2, 132, 199, 0.15);
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.04);
+  --shadow-elevated: 0 4px 20px rgba(0, 0, 0, 0.07);
+  --theme-mode: light;
+}
+
+/* ========================================
+   Base Reset
+   ======================================== */
 *,
 *::before,
 *::after {
@@ -75,7 +144,7 @@
 html {
   font-size: 16px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+  scrollbar-color: rgba(128, 128, 128, 0.15) transparent;
 }
 
 body {
@@ -90,21 +159,21 @@ body {
   transition: var(--theme-transition);
 }
 
-/* Background gradient */
+/* Background gradient — dark themes */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(25, 25, 60, 0.6) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 50% at 80% 100%, rgba(40, 20, 60, 0.3) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 10% 60%, rgba(15, 30, 60, 0.3) 0%, transparent 60%);
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(25, 25, 60, 0.5) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 80% 100%, rgba(40, 20, 60, 0.25) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 10% 60%, rgba(15, 30, 60, 0.25) 0%, transparent 60%);
   pointer-events: none;
   z-index: 0;
   transition: opacity 0.4s ease;
 }
 
-/* Noise texture overlay */
+/* Noise texture */
 body::after {
   content: '';
   position: fixed;
@@ -130,17 +199,17 @@ body::after {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(128, 128, 128, 0.15);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(128, 128, 128, 0.25);
 }
 
 /* Selection */
 ::selection {
-  background: rgba(212, 175, 55, 0.25);
+  background: var(--accent-gold-dim);
   color: var(--text-primary);
 }
 
@@ -153,127 +222,137 @@ body::after {
   opacity: 0.6;
 }
 
-/* ======================================== 
-   Light Theme Overrides 
+/* ========================================
+   Light Theme Overrides (dawn + frost)
    ======================================== */
-
-[data-theme="light"] body::before {
+[data-theme="dawn"] body::before,
+[data-theme="frost"] body::before {
   background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(235, 225, 200, 0.45) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 50% at 80% 100%, rgba(220, 210, 185, 0.2) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 10% 60%, rgba(225, 215, 190, 0.2) 0%, transparent 60%);
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(200, 200, 220, 0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 80% 100%, rgba(180, 190, 210, 0.1) 0%, transparent 60%);
 }
 
-[data-theme="light"] body::after {
-  opacity: 0.01;
+[data-theme="dawn"] body::after,
+[data-theme="frost"] body::after {
+  opacity: 0.008;
 }
 
-[data-theme="light"] .particle-canvas {
-  opacity: 0.15;
+[data-theme="dawn"] .particle-canvas,
+[data-theme="frost"] .particle-canvas {
+  opacity: 0.12;
 }
 
-[data-theme="light"] ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
-}
-
-[data-theme="light"] ::selection {
-  background: rgba(160, 124, 28, 0.2);
-}
-
-/* Light theme element-level fixes */
-[data-theme="light"] .form-input,
-[data-theme="light"] .search-input,
-[data-theme="light"] .search-sort {
+/* Light theme element overrides */
+[data-theme="dawn"] .form-input,
+[data-theme="dawn"] .search-input,
+[data-theme="dawn"] .search-sort,
+[data-theme="frost"] .form-input,
+[data-theme="frost"] .search-input,
+[data-theme="frost"] .search-sort {
   background: rgba(0, 0, 0, 0.02);
   border-color: rgba(0, 0, 0, 0.1);
 }
 
-[data-theme="light"] .form-input:focus,
-[data-theme="light"] .search-input:focus {
+[data-theme="dawn"] .form-input:focus,
+[data-theme="dawn"] .search-input:focus,
+[data-theme="frost"] .form-input:focus,
+[data-theme="frost"] .search-input:focus {
   border-color: var(--accent-gold);
-  box-shadow: 0 0 0 3px rgba(160, 124, 28, 0.08);
+  box-shadow: 0 0 0 3px var(--accent-gold-dim);
 }
 
-[data-theme="light"] .form-modal__close,
-[data-theme="light"] .event-card__btn {
+[data-theme="dawn"] .form-modal__close,
+[data-theme="dawn"] .event-card__btn,
+[data-theme="frost"] .form-modal__close,
+[data-theme="frost"] .event-card__btn {
   background: rgba(0, 0, 0, 0.03);
   border-color: rgba(0, 0, 0, 0.08);
 }
 
-[data-theme="light"] .form-modal__close:hover,
-[data-theme="light"] .event-card__btn:hover {
+[data-theme="dawn"] .form-modal__close:hover,
+[data-theme="dawn"] .event-card__btn:hover,
+[data-theme="frost"] .form-modal__close:hover,
+[data-theme="frost"] .event-card__btn:hover {
   background: rgba(0, 0, 0, 0.06);
 }
 
-[data-theme="light"] .form-category-btn {
+[data-theme="dawn"] .form-category-btn,
+[data-theme="dawn"] .form-toggle-btn,
+[data-theme="frost"] .form-category-btn,
+[data-theme="frost"] .form-toggle-btn {
   background: rgba(0, 0, 0, 0.02);
   border-color: rgba(0, 0, 0, 0.06);
 }
 
-[data-theme="light"] .form-toggle-btn {
-  background: rgba(0, 0, 0, 0.02);
-  border-color: rgba(0, 0, 0, 0.06);
-}
-
-[data-theme="light"] .form-btn--secondary {
+[data-theme="dawn"] .form-btn--secondary,
+[data-theme="frost"] .form-btn--secondary {
   background: rgba(0, 0, 0, 0.03);
   border-color: rgba(0, 0, 0, 0.08);
 }
 
-[data-theme="light"] .form-btn--secondary:hover {
+[data-theme="dawn"] .form-btn--secondary:hover,
+[data-theme="frost"] .form-btn--secondary:hover {
   background: rgba(0, 0, 0, 0.06);
 }
 
-[data-theme="light"] .event-card {
+[data-theme="dawn"] .event-card,
+[data-theme="frost"] .event-card {
   box-shadow: var(--shadow-card);
 }
 
-[data-theme="light"] .event-card:hover {
+[data-theme="dawn"] .event-card:hover,
+[data-theme="frost"] .event-card:hover {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-[data-theme="light"] .stats-card {
+[data-theme="dawn"] .stats-card,
+[data-theme="frost"] .stats-card {
   box-shadow: var(--shadow-card);
 }
 
-[data-theme="light"] .toast {
+[data-theme="dawn"] .toast,
+[data-theme="frost"] .toast {
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
 }
 
-[data-theme="light"] .settings-menu__dropdown {
+[data-theme="dawn"] .settings-menu__dropdown,
+[data-theme="frost"] .settings-menu__dropdown {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-[data-theme="light"] .form-modal {
+[data-theme="dawn"] .form-modal,
+[data-theme="frost"] .form-modal {
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.12);
 }
 
-[data-theme="light"] .app-header__hints kbd {
+[data-theme="dawn"] .app-header__hints kbd,
+[data-theme="frost"] .app-header__hints kbd {
   background: rgba(0, 0, 0, 0.04);
   border-color: rgba(0, 0, 0, 0.1);
   color: var(--text-tertiary);
 }
 
-[data-theme="light"] .search-cat-pill {
+[data-theme="dawn"] .search-cat-pill,
+[data-theme="frost"] .search-cat-pill {
   background: rgba(0, 0, 0, 0.02);
 }
 
-[data-theme="light"] .search-cat-pill:hover {
+[data-theme="dawn"] .search-cat-pill:hover,
+[data-theme="frost"] .search-cat-pill:hover {
   background: rgba(0, 0, 0, 0.04);
 }
 
-[data-theme="light"] .search-view-toggle {
+[data-theme="dawn"] .search-view-toggle,
+[data-theme="frost"] .search-view-toggle {
   box-shadow: var(--shadow-card);
 }
 
-[data-theme="light"] .onboarding-card {
+[data-theme="dawn"] .onboarding-card,
+[data-theme="frost"] .onboarding-card {
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.12);
 }
 
-[data-theme="light"] .form-input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+[data-theme="dawn"] .form-input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+[data-theme="frost"] .form-input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   filter: none;
 }

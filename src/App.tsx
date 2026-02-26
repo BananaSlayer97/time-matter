@@ -47,7 +47,7 @@ function App() {
   const toastCallbacks = useMemo(() => ({ showSuccess, showError }), [showSuccess, showError]);
   const { exportData, importData } = useDataTransfer(events, replaceAllEvents, toastCallbacks);
   const { requestPermission, permissionStatus } = useNotifications(events);
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme: setAppTheme } = useTheme();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isCatManagerOpen, setIsCatManagerOpen] = useState(false);
@@ -171,7 +171,7 @@ function App() {
     onRequestNotifications: requestPermission,
     notificationPermission: permissionStatus,
     theme,
-    onToggleTheme: toggleTheme,
+    onSetTheme: setAppTheme,
     onManageCategories: () => setIsCatManagerOpen(true),
   };
 
