@@ -71,19 +71,23 @@
 
 /* ---- Card ---- */
 .tp-card {
-    background: var(--card-bg);
+    background: var(--surface-card);
+    backdrop-filter: blur(16px) saturate(1.8);
+    -webkit-backdrop-filter: blur(16px) saturate(1.8);
     border: 1px solid var(--card-border);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), var(--shadow-card);
     border-radius: 12px;
-    padding: 12px 14px;
+    padding: 14px 16px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    transition: border-color 0.2s ease, transform 0.2s ease;
+    gap: 6px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .tp-card:hover {
     border-color: var(--accent-gold-dim);
-    transform: translateY(-1px);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08), 0 8px 32px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
 }
 
 .tp-card__header {
@@ -92,17 +96,30 @@
     gap: 6px;
 }
 
+.tp-card__icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
 .tp-card__icon {
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1;
+    text-shadow: 0 0 10px currentColor;
+    /* glow effect */
 }
 
 .tp-card__label {
     font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
-    color: var(--text-tertiary);
-    letter-spacing: 0.3px;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
 }
 
 .tp-card__percent-badge {
@@ -135,7 +152,8 @@
 .tp-card__bar-track {
     height: 4px;
     border-radius: 4px;
-    background: var(--card-border);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
     overflow: hidden;
     margin-top: 4px;
 }
@@ -228,23 +246,13 @@
 }
 
 /* Time Unit Coloring (TP Cards) */
-.tp-unit--days {
-    color: #ff9f43;
-}
-
-.tp-unit--hours {
-    color: #26de81;
-}
-
-.tp-unit--minutes {
-    color: #4b7bec;
-}
-
-.tp-unit--seconds {
-    color: #eb4d4b;
+.tp-unit--unified {
+    color: var(--text-primary);
+    text-shadow: 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
 .tp-card__separator {
-    opacity: 0.3;
+    color: var(--text-tertiary);
     margin: 0 2px;
+    font-weight: 400;
 }

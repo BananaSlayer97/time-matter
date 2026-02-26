@@ -10,11 +10,12 @@ interface TimeSlot {
     detail: string; // extra context line
 }
 
-/** 根据百分比返回 HSL 颜色：绿(0%) → 黄(50%) → 红(100%) */
-function progressColor(percent: number): string {
-    const p = Math.min(Math.max(percent, 0), 100);
-    const hue = 120 - (p / 100) * 120;
-    return `hsl(${hue}, 72%, 52%)`;
+function getSlotColor(label: string): string {
+    // 统一色彩：短期用金色，中长期用冰蓝色，避免杂乱的彩虹色
+    if (['本小时', '今天', '本周'].includes(label)) {
+        return 'var(--accent-gold)';
+    }
+    return 'var(--accent-ice)';
 }
 
 function getTimeSlots(now: Date): TimeSlot[] {
@@ -191,11 +192,13 @@ export function TimeProgress({ isFocusMode, onToggleFocus }: TimeProgressProps) 
                 <div className="time-progress__body">
                     <div className="time-progress__grid">
                         {slots.map((slot) => {
-                            const color = progressColor(slot.percent);
+                            const color = getSlotColor(slot.label);
                             return (
                                 <div key={slot.label} className="tp-card">
                                     <div className="tp-card__header">
-                                        <span className="tp-card__icon">{slot.icon}</span>
+                                        <div className="tp-card__icon-wrapper" style={{ color }}>
+                                            <span className="tp-card__icon">{slot.icon}</span>
+                                        </div>
                                         <span className="tp-card__label">{slot.label}</span>
                                         <span className="tp-card__percent-badge" style={{ color }}>
                                             {slot.percent.toFixed(1)}%
@@ -205,7 +208,7 @@ export function TimeProgress({ isFocusMode, onToggleFocus }: TimeProgressProps) 
                                         {slot.label === '今天' || slot.label === '本小时' ? (
                                             slot.remaining.split(':').map((part, i, arr) => (
                                                 <span key={i}>
-                                                    <span className={`tp-unit--${arr.length === 3 ? (i === 0 ? 'hours' : i === 1 ? 'minutes' : 'seconds') : (i === 0 ? 'minutes' : 'seconds')}`}>
+                                                    <span className="tp-unit--unified">
                                                         {part}
                                                     </span>
                                                     {i < arr.length - 1 && <span className="tp-card__separator">:</span>}
@@ -213,12 +216,12 @@ export function TimeProgress({ isFocusMode, onToggleFocus }: TimeProgressProps) 
                                             ))
                                         ) : slot.label === '本周' ? (
                                             <>
-                                                <span className="tp-unit--days">{slot.remaining.split(' ')[0]}</span>
+                                                <span className="tp-unit--unified">{slot.remaining.split(' ')[0]}</span>
                                                 {' '}
-                                                <span className="tp-unit--hours">{slot.remaining.split(' ')[1]}</span>
+                                                <span className="tp-unit--unified">{slot.remaining.split(' ')[1]}</span>
                                             </>
                                         ) : (
-                                            <span className={`tp-unit--${slot.remaining.includes('天') ? 'days' : 'minutes'}`}>
+                                            <span className="tp-unit--unified">
                                                 {slot.remaining}
                                             </span>
                                         )}
@@ -229,8 +232,8 @@ export function TimeProgress({ isFocusMode, onToggleFocus }: TimeProgressProps) 
                                             className="tp-card__bar-fill"
                                             style={{
                                                 width: `${Math.min(slot.percent, 100)}%`,
-                                                background: color,
-                                                boxShadow: `0 0 8px ${color}`,
+                                                background: `linear-gradient(90deg, transparent, ${color})`,
+                                                boxShadow: `2px 0 8px ${color}`,
                                                 opacity: 0.9,
                                             }}
                                         />

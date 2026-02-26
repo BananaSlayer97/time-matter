@@ -17,15 +17,18 @@
   justify-content: center;
   width: 36px;
   height: 52px;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  background: var(--surface-card);
+  backdrop-filter: blur(12px) saturate(1.5);
+  -webkit-backdrop-filter: blur(12px) saturate(1.5);
+  border: 1px solid rgba(200, 200, 200, 0.1);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08), 0 2px 4px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   font-family: 'DM Sans', sans-serif;
   font-size: 28px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: var(--text-primary);
-  transition: transform 0.15s ease, background 0.3s ease;
+  transition: transform 0.15s ease, background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .time-digit-wrapper.flipping .time-digit-char {
@@ -42,37 +45,33 @@
 
 /* Unit Colors */
 .time-digit-container--days {
-  --digit-color: #ff9f43;
-  /* Warm Orange */
-  --digit-glow: rgba(255, 159, 67, 0.4);
+  --digit-color: var(--accent-gold);
+  --digit-glow: rgba(212, 175, 55, 0.25);
 }
 
 .time-digit-container--hours {
-  --digit-color: #26de81;
-  /* Fresh Green */
-  --digit-glow: rgba(38, 222, 129, 0.4);
+  --digit-color: var(--text-primary);
+  --digit-glow: rgba(255, 255, 255, 0.15);
 }
 
 .time-digit-container--minutes {
-  --digit-color: #4b7bec;
-  /* Royal Blue */
-  --digit-glow: rgba(75, 123, 236, 0.4);
+  --digit-color: var(--text-secondary);
+  --digit-glow: rgba(255, 255, 255, 0.1);
 }
 
 .time-digit-container--seconds {
-  --digit-color: #eb4d4b;
-  /* Vibrant Red */
-  --digit-glow: rgba(235, 77, 75, 0.4);
+  --digit-color: var(--text-tertiary);
+  --digit-glow: rgba(255, 255, 255, 0.05);
 }
 
 .time-digit-container[class*="--"] .time-digit-char {
   color: var(--digit-color);
-  border-color: var(--digit-glow);
+  border-bottom: 2px solid var(--digit-glow);
 }
 
 .time-digit-container[class*="--"] .time-digit-label {
-  color: var(--digit-color);
-  opacity: 0.8;
+  color: var(--text-tertiary);
+  opacity: 0.9;
 }
 
 .time-digit-label {
