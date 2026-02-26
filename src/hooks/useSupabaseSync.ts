@@ -20,17 +20,17 @@ export function useCloudSync(
         () => localStorage.getItem(LAST_SYNC_KEY)
     );
 
-    // ↑ 本地 → 云端（覆盖）
+    // ↑ 本地 → 云端（增量更新/覆盖）
     const pushToCloud = useCallback(async () => {
         if (!user || syncing) return;
         setSyncing(true);
         try {
-            // 1. 清空云端该用户的所有数据
-            await supabase.from('events').delete().eq('user_id', user.id);
-
-            // 2. 把本地数据全量写入
-            if (events.length > 0) {
+            if (events.length === 0) {
+                // 如果本地为空，可能真的想清空云端，这里保留删除逻辑但需谨慎
+                await supabase.from('events').delete().eq('user_id', user.id);
+            } else {
                 const rows = events.map((e, i) => ({
+                    id: e.id, // 关键：包含 ID 以便 upsert 识别
                     user_id: user.id,
                     name: e.name,
                     target_date: e.targetDate,
@@ -45,7 +45,12 @@ export function useCloudSync(
                     reminder_minutes: e.reminderMinutes || 0,
                 }));
 
-                const { error } = await supabase.from('events').insert(rows);
+                // 使用 upsert：根据主键（通常是 id）更新，如果不存在则插入
+                // 注意：在 Supabase 中需要确保 id 是主键且 RLS 允许更新
+                const { error } = await supabase.from('events').upsert(rows, {
+                    onConflict: 'id',
+                });
+
                 if (error) throw error;
             }
 

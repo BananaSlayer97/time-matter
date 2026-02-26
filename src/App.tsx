@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useMemo, memo } from 'react';
-import { useEvents } from './hooks/useEvents';
+import { useStore } from './store/useStore';
 import { useDataTransfer } from './hooks/useDataTransfer';
 import { useNotifications } from './hooks/useNotifications';
 import { useTheme } from './hooks/useTheme';
@@ -10,7 +10,6 @@ import { ParticleBackground } from './components/ParticleBackground';
 import { EventCard } from './components/EventCard';
 import { EventForm } from './components/EventForm';
 import { EventDetail } from './components/EventDetail';
-import { EmptyState } from './components/EmptyState';
 import { ToastContainer } from './components/ToastContainer';
 import { SearchToolbar } from './components/SearchToolbar';
 import { HeaderToolbar } from './components/HeaderToolbar';
@@ -45,7 +44,7 @@ function App() {
     customCategories,
     addCustomCategory,
     removeCustomCategory
-  } = useEvents();
+  } = useStore();
 
   const { toasts, removeToast, showSuccess, showError, showUndo } = useToast();
   const toastCallbacks = useMemo(() => ({ showSuccess, showError }), [showSuccess, showError]);
@@ -58,15 +57,11 @@ function App() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isCatManagerOpen, setIsCatManagerOpen] = useState(false);
   const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
-  const [isArchiveOpen, setIsArchiveOpen] = useState(false);
-  const [isTemplateGalleryOpen, setIsTemplateGalleryOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<TimeEvent | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [detailEvent, setDetailEvent] = useState<TimeEvent | null>(null);
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
   const [sortBy, setSortBy] = useState<'countdown' | 'created'>('countdown');
   const [filteredEvents, setFilteredEvents] = useState<TimeEvent[]>([]);
   const [showArchived, setShowArchived] = useState(false);
@@ -241,21 +236,21 @@ function App() {
                   <HeaderToolbar {...settingsProps} />
 
                   <button
-                    className="app-header__action-btn"
-                    onClick={() => setIsArchiveOpen(true)}
-                    title="查看归档 (G A)"
+                    className={`app-header__action-btn ${showArchived ? 'app-header__action-btn--active' : ''}`}
+                    onClick={() => setShowArchived(!showArchived)}
+                    title={showArchived ? "返回主视图" : "查看归档 (G A)"}
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="21 8 21 21 3 21 3 8" />
                       <rect x="1" y="3" width="22" height="5" />
                       <line x1="10" y1="12" x2="14" y2="12" />
                     </svg>
-                    <span>归档</span>
+                    <span>{showArchived ? '返回' : '归档'}</span>
                   </button>
 
                   <button
                     className="app-header__action-btn"
-                    onClick={() => setIsTemplateGalleryOpen(true)}
+                    onClick={() => setIsTemplatesOpen(true)}
                     title="模板库 (T)"
                   >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -305,8 +300,6 @@ function App() {
             <>
               <StatsBar
                 events={events}
-                onSearch={setSearchQuery}
-                onCategoryChange={setCategoryFilter}
                 onThemeChange={settingsProps.onSetTheme}
                 currentTheme={settingsProps.theme}
                 viewMode={viewMode}
