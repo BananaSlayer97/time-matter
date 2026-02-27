@@ -21,6 +21,7 @@ import { TemplateGallery } from './components/TemplateGallery';
 import { CompactRow } from './components/CompactRow';
 import { AuthModal } from './components/AuthModal';
 import { useAuth } from './hooks/useAuth';
+import { useGlobalTick } from './context/GlobalTickContext';
 import { useCloudSync } from './hooks/useSupabaseSync';
 import { exportToICal } from './utils/ical';
 import type { TimeEvent } from './types';
@@ -164,16 +165,22 @@ function App() {
   });
 
   // Display Logic: filter archived if not in archive view
-  const now = Date.now();
-  const allDisplayEvents = events.length > 0 ? filteredEvents : [];
+  const tick = useGlobalTick();
 
-  // Rule: In main view, hide archived. In archive view, show only archived.
-  const displayEvents = allDisplayEvents.filter(e => !!e.archived === showArchived);
+  const { pinnedEvents, futureEvents, pastEvents, displayEvents } = useMemo(() => {
+    const allDisplayEvents = events.length > 0 ? filteredEvents : [];
+    // Rule: In main view, hide archived. In archive view, show only archived.
+    const display = allDisplayEvents.filter(e => !!e.archived === showArchived);
 
-  const pinnedEvents = displayEvents.filter(e => e.pinned);
-  const unpinnedDisplay = displayEvents.filter(e => !e.pinned);
-  const futureEvents = unpinnedDisplay.filter(e => new Date(e.targetDate).getTime() > now);
-  const pastEvents = unpinnedDisplay.filter(e => new Date(e.targetDate).getTime() <= now);
+    const pinned = display.filter(e => e.pinned);
+    const unpinned = display.filter(e => !e.pinned);
+
+    // Use tick for stable comparison within the minute
+    const future = unpinned.filter(e => new Date(e.targetDate).getTime() > tick);
+    const past = unpinned.filter(e => new Date(e.targetDate).getTime() <= tick);
+
+    return { pinnedEvents: pinned, futureEvents: future, pastEvents: past, displayEvents: display };
+  }, [events.length, filteredEvents, showArchived, tick]);
 
   const settingsProps = {
     onExport: exportData,

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { TimeEvent, EventCategory, CategoryInfo } from '../types';
 import { CATEGORIES } from '../types';
 import './SearchToolbar.css';
@@ -30,21 +30,21 @@ export function SearchToolbar({ events, onFilteredEvents, viewMode, onViewModeCh
     const filtered = useMemo(() => {
         let result = [...events];
 
-        // Search
-        if (query.trim()) {
-            const q = query.toLowerCase();
+        // 1. Search (Lowercase query once)
+        const q = query.trim().toLowerCase();
+        if (q) {
             result = result.filter(e =>
                 e.name.toLowerCase().includes(q) ||
                 e.note?.toLowerCase().includes(q)
             );
         }
 
-        // Category filter
+        // 2. Category filter
         if (activeCategory !== 'all') {
             result = result.filter(e => e.category === activeCategory);
         }
 
-        // Sort
+        // 3. Sort (Pre-calculate sort keys for complex sorts if needed, but keeping it direct for now)
         switch (sortBy) {
             case 'date-asc':
                 result.sort((a, b) => new Date(a.targetDate).getTime() - new Date(b.targetDate).getTime());
@@ -60,11 +60,24 @@ export function SearchToolbar({ events, onFilteredEvents, viewMode, onViewModeCh
                 break;
         }
 
-        onFilteredEvents(result);
         return result;
-    }, [events, query, activeCategory, sortBy, onFilteredEvents]);
+    }, [events, query, activeCategory, sortBy]);
 
-    const categoryEntries = Object.entries(CATEGORIES) as [string, CategoryInfo][];
+    // Isolate the callback to notify parent
+    useEffect(() => {
+        onFilteredEvents(filtered);
+    }, [filtered, onFilteredEvents]);
+
+    // Optimize category counts: Single pass over the FULL events list
+    const categoryCounts = useMemo(() => {
+        const counts: Record<string, number> = {};
+        for (const e of events) {
+            counts[e.category] = (counts[e.category] || 0) + 1;
+        }
+        return counts;
+    }, [events]);
+
+    const categoryEntries = useMemo(() => Object.entries(CATEGORIES) as [string, CategoryInfo][], []);
 
     return (
         <div className="search-toolbar">
@@ -145,7 +158,7 @@ export function SearchToolbar({ events, onFilteredEvents, viewMode, onViewModeCh
                     全部 <span className="search-cat-count">{events.length}</span>
                 </button>
                 {categoryEntries.map(([key, cat]) => {
-                    const count = events.filter(e => e.category === key).length;
+                    const count = categoryCounts[key] || 0;
                     if (count === 0) return null;
                     return (
                         <button
