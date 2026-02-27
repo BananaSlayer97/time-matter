@@ -28,7 +28,6 @@ function getTimeSlots(now: Date): TimeSlot[] {
     const hourElapsed = timestamp - hourStart.getTime();
     const hourLeft = 3600_000 - hourElapsed;
     const hourMins = Math.floor(hourLeft / 60_000);
-    const hourSecs = Math.floor((hourLeft % 60_000) / 1000);
     const hourPercent = (hourElapsed / 3600_000) * 100;
     const elapsedMins = Math.floor(hourElapsed / 60_000);
 
@@ -38,7 +37,6 @@ function getTimeSlots(now: Date): TimeSlot[] {
     const dayLeft = 86400_000 - dayElapsed;
     const dayHrs = Math.floor(dayLeft / 3600_000);
     const dayMins = Math.floor((dayLeft % 3600_000) / 60_000);
-    const daySecs = Math.floor((dayLeft % 60_000) / 1000);
     const dayPercent = (dayElapsed / 86400_000) * 100;
     const elapsedHrs = Math.floor(dayElapsed / 3600_000);
 
@@ -87,14 +85,14 @@ function getTimeSlots(now: Date): TimeSlot[] {
     return [
         {
             label: '本小时', icon: '⏱',
-            remaining: `${pad(hourMins)}:${pad(hourSecs)}`,
+            remaining: `${pad(hourMins)}`,
             elapsed: `已过 ${elapsedMins} 分钟`,
             percent: hourPercent,
             detail: `${now.getHours()}:00 – ${now.getHours() + 1}:00`,
         },
         {
             label: '今天', icon: '☀️',
-            remaining: `${pad(dayHrs)}:${pad(dayMins)}:${pad(daySecs)}`,
+            remaining: `${pad(dayHrs)}:${pad(dayMins)}`,
             elapsed: `已过 ${elapsedHrs} 小时`,
             percent: dayPercent,
             detail: `${now.getMonth() + 1}月${now.getDate()}日 · 周${weekDayNames[wd]}`,
@@ -142,6 +140,7 @@ export function TimeProgress({ isFocusMode, onToggleFocus }: TimeProgressProps) 
     const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem(STORAGE_KEY) === '1');
 
     const slots = useMemo(() => getTimeSlots(new Date(tick)), [tick]);
+
 
     const toggleCollapse = () => {
         setIsCollapsed(prev => {
@@ -204,7 +203,7 @@ export function TimeProgress({ isFocusMode, onToggleFocus }: TimeProgressProps) 
                                         </span>
                                     </div>
                                     <div className="tp-card__remaining">
-                                        {slot.label === '今天' || slot.label === '本小时' ? (
+                                        {slot.label === '今天' ? (
                                             slot.remaining.split(':').map((part, i, arr) => (
                                                 <span key={i}>
                                                     <span className="tp-unit--unified">
@@ -213,6 +212,10 @@ export function TimeProgress({ isFocusMode, onToggleFocus }: TimeProgressProps) 
                                                     {i < arr.length - 1 && <span className="tp-card__separator">:</span>}
                                                 </span>
                                             ))
+                                        ) : slot.label === '本小时' ? (
+                                            <span className="tp-unit--unified">
+                                                {slot.remaining}
+                                            </span>
                                         ) : slot.label === '本周' ? (
                                             <>
                                                 <span className="tp-unit--unified">{slot.remaining.split(' ')[0]}</span>

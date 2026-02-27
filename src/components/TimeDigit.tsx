@@ -33,7 +33,7 @@ export function TimeDigit({ value, label, isPast }: TimeDigitProps) {
 
     const digitArray = label === '天' ? dayDigits : digits;
 
-    const unitClass = label === '天' ? 'days' : label === '时' ? 'hours' : label === '分' ? 'minutes' : 'seconds';
+    const unitClass = label === '天' ? 'days' : label === '时' ? 'hours' : 'minutes';
 
     return (
         <div className={`time-digit-container time-digit-container--${unitClass}`}>

@@ -6,11 +6,10 @@ export const GlobalTickProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const [now, setNow] = useState(Date.now());
 
     useEffect(() => {
-        // Use a single interval for the entire app
-        // Ticks every 1000ms to stay synchronized with seconds
+        // Updated to tick every 60 seconds for performance
         const timer = setInterval(() => {
             setNow(Date.now());
-        }, 1000);
+        }, 60000);
 
         return () => clearInterval(timer);
     }, []);

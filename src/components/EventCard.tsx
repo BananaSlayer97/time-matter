@@ -262,8 +262,6 @@ export function EventCard({ event, onEdit, onDelete, onDuplicate, onPin, onArchi
                 <TimeDigit value={diff.hours} label="时" isPast={diff.isPast} />
                 <span className="event-card__separator">:</span>
                 <TimeDigit value={diff.minutes} label="分" isPast={diff.isPast} />
-                <span className="event-card__separator">:</span>
-                <TimeDigit value={diff.seconds} label="秒" isPast={diff.isPast} />
             </div>
 
             {/* Shimmer removed for cleaner look */}
